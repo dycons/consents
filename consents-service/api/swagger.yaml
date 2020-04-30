@@ -1,0 +1,230 @@
+consumes:
+- application/json
+info:
+  description: A prototype microservice that stores participant data-sharing consent, metadata that may be used to inform row-level data access decisions, with respect for contextual integrity.
+  title: A barebones service for consent metadata
+  version: 1.0.0
+produces:
+- application/json
+schemes:
+- http
+openapi: "3.0.2"
+
+paths:
+  /default_consents:
+    post:
+      operationId: post_default_consent
+      summary: Add default consent metadata for a set of research data
+      parameters:
+      - $ref: '#/parameters/default_consent'
+      responses:
+        201:
+          description: New default consent created
+          schema:
+            $ref: '#/definitions/DefaultConsent'
+          headers:
+            Location:
+              type: string
+              format: url
+        404:
+          description: Linked study participant not found
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: Forbidden to overwrite default consent in post
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error - default consent not created
+          schema:
+            $ref: "#/definitions/Error"
+
+  /default_consents/{study_identifier}:
+    get:
+      operationId: get_one_default_consent
+      summary: Get specific default consent by its associated study_identifier
+      parameters:
+      - $ref: '#/parameters/study_identifier'
+      responses: 
+        200:
+          description: Return default consent
+          schema:
+            $ref: '#/definitions/DefaultConsent'
+        404:
+          description: Study participant not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /project_consents:
+    post:
+      operationId: post_project_consent
+      summary: Add project-specific consent metadata for a set of research data
+      parameters:
+      - $ref: '#/parameters/project_consent'
+      responses:
+        201:
+          description: New project consent created
+          schema:
+            $ref: '#/definitions/ProjectConsent'
+          headers:
+            Location:
+              type: string
+              format: url
+        404:
+          description: Linked study participant not found
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: Forbidden to overwrite project consent in post
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error - project consent not created
+          schema:
+            $ref: "#/definitions/Error"
+    get: # Only App Services (Jonathan's microservices) should be authz'd to make this call
+      operationId: get_project_consents
+      summary: Get all project consents
+      responses:
+        200:
+          description: Return project consents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectConsent'
+            example: []
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /project-consents/{study_identifier}:
+    get:
+      operationId: get_project_consents_by_participant
+      summary: Get all project consents for a particular participant, by their associated study_identifier
+      parameters:
+      - $ref: '#/parameters/study_identifier'
+      responses: 
+        200:
+          description: Return all affiliated project consents
+          schema:
+            $ref: '#/definitions/ProjectConsent'
+        404:
+          description: Study participant not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  # TODO do we need /project-consents/{application_id}? ie. does application services need to download consents by secondary project?
+
+parameters:
+  study_identifier:
+    name: study_identifier
+    description: UUID for all research data and metadata affiliated with a participant
+    in: path
+    type: string
+    format: uuid
+    example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+    required: true
+  default_consent:
+    name: default_consent
+    in: body
+    schema:
+      $ref: '#/definitions/DefaultConsent'
+      example:
+        study_identifier: bf3ba75b-8dfe-4619-b832-31c4a087a589
+        created: "2017-07-21T17:32:28Z"
+        genetic_consent: DNS
+        clinical_consent: DNS
+  project_consent:
+    name: project_consent
+    in: body
+    schema:
+      $ref: '#/definitions/ProjectConsent'
+      example:
+        study_identifier: bf3ba75b-8dfe-4619-b832-31c4a087a589
+        created: "2017-07-21T17:32:28Z"
+        application_id: bf3ba75b-8dfe-4619-b832-31c4a087a589
+        genetic_consent: false
+        clinical_consent: false
+
+definitions:
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties: 
+      code:
+        type: integer
+        minimum: 100000
+        maximum: 599999
+        description: Computer-readable error code, format 'HHHDDD' where HHH is the HTTP code and DDD is the error-specific detail codes
+        example: 500001
+      message:
+        type: string
+        description: Human-readable informational error message
+        example: "Forbidden to modify existing default consent on post"
+  DefaultConsent:
+    type: object
+    required:
+      - study_identifier
+    properties:
+      study_identifier:
+        type: string
+        format: uuid
+        description: Unique identifier that links study data to its consent metadata
+        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+      created:
+        type: string
+        format: date-time
+        description: Creation time
+        example: "2017-07-21T17:32:28Z"
+        readOnly: true
+      genetic_consent:
+        type: string
+        enum: [OO, OI, DNS]
+        description: Default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
+        example: DNS
+      clinical_consent:
+        type: string
+        enum: [OO, OI, DNS]
+        description: Default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
+        example: DNS
+  ProjectConsent:
+    type: object
+    required:
+      - study_identifier
+      - application_id
+    properties:
+      study_identifier:
+        type: string
+        format: uuid
+        description: Unique identifier that links study data to its consent metadata
+        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+      created:
+        type: string
+        format: date-time
+        description: Creation time
+        example: "2017-07-21T17:32:28Z"
+        readOnly: true
+      application_id:
+        type: string
+        format: uuid
+        description: Unique identifier that links this consent metadata to the secondary or tertiary data-using project that it pertains to
+        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+      genetic_consent:
+        type: boolean
+        description: (T/F)- Participant has consented to having this project access their genetic data?
+        example: false
+      clinical_consent:
+        type: boolean
+        description: (T/F)- Participant has consented to having this project access their clinical data?
+        example: false
