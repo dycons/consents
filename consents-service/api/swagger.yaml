@@ -193,11 +193,13 @@ definitions:
         enum: [OO, OI, DNS]
         description: Default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
         example: DNS
+        default: DNS
       clinical_consent:
         type: string
         enum: [OO, OI, DNS]
         description: Default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
         example: DNS
+        default: DNS
   ProjectConsent:
     type: object
     required:
@@ -224,7 +226,10 @@ definitions:
         type: boolean
         description: (T/F)- Participant has consented to having this project access their genetic data?
         example: false
+        default: false
       clinical_consent:
         type: boolean
         description: (T/F)- Participant has consented to having this project access their clinical data?
         example: false
+        default: false
+  

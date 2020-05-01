@@ -1,0 +1,16 @@
+# This database config file must be kept within one of the following paths, relative to
+# the file attempting to make the database connection:
+# "", "./config", "/config", "../", "../config", "../..", "../../config", "APP_PATH", "POP_PATH"
+# For more information: https://github.com/gobuffalo/pop/blob/master/config.go
+
+# This file must be kept in the same directory as the main file being run. Otherwise, the database
+# (development.sqlite) will not be found when the program is run.
+# To meet the requirements above (line 3), $POP_PATH is set upon installation of the service (see
+# the README or install.sh).
+
+development:
+  dialect: "sqlite3"
+  database: "./consent-service/data/development.sqlite"
+  host: "localhost"
+  port: "8080"
+  
