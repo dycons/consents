@@ -12,7 +12,7 @@ soda generate model consent_style \
 	-e development
 
 # Generate model for DefaultConsent
-# TODO associations, enums
+# All three associations below should be converted into ForeignKeys
 soda generate model default_consent \
 	study_participant_id:uuid \
 	genetic_consent_style_id:uuid \
@@ -20,7 +20,7 @@ soda generate model default_consent \
 	-e development
 
 # Generate model for ProjectConsent
-# TODO associations, check if bool is correct type
+# StudyParticipant association should be converted into ForeignKey
 soda generate model project_consent \
 	study_participant_id:uuid \
 	project_application_id:uuid \

@@ -1,0 +1,6 @@
+create_table("default_consents") {
+	t.Column("id", "uuid", {"primary": true})
+	t.ForeignKey("study_participant_id", {"study_participants": ["id"]}, {})
+	t.ForeignKey("genetic_consent_style_id", {"consent_styles": ["id"]}, {})
+	t.ForeignKey("clinical_consent_style_id", {"consent_styles": ["id"]}, {})
+})
