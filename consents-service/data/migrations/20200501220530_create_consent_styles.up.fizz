@@ -1,8 +1,0 @@
-create_table("consent_styles") {
-	t.Column("id", "uuid", {"primary": true})
-	t.Column("consent_style", "string", {})
-
-	// Disable auto-creation of created_at and updated_at columns, since this is an
-	// enum-like lookup table
-	t.DisableTimestamps()
-})

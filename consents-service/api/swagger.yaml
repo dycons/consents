@@ -191,15 +191,15 @@ definitions:
       genetic_consent:
         type: string
         enum: [OO, OI, DNS]
-        description: Default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
-        example: DNS
-        default: DNS
+        description: Default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
+        example: "SUF"
+        default: "SUF"
       clinical_consent:
         type: string
         enum: [OO, OI, DNS]
-        description: Default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | DNS (Do-Not-Share)
-        example: DNS
-        default: DNS
+        description: Default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
+        example: "SUF"
+        default: "SUF"
   ProjectConsent:
     type: object
     required:

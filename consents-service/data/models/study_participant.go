@@ -9,11 +9,11 @@ import (
 )
 
 type StudyParticipant struct {
-	ID        		uuid.UUID 			`json:"id" db:"id"`
-	CreatedAt 		ime.Time 			`json:"created_at" db:"created_at"`
-	UpdatedAt 		time.Time 			`json:"updated_at" db:"updated_at"`
-	DefaultConsent 	DefaultConsent		`json:"default_consent" has_one:"default_consent"`
-	ProjectConsents	[]ProjectConsent	`json:"project_consents" has_many:"project_consents"`
+	ID              uuid.UUID       `json:"id" db:"id"`
+	CreatedAt       ime.Time        `json:"created_at" db:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at" db:"updated_at"`
+	DefaultConsent  DefaultConsent  `json:"default_consent" has_one:"default_consent"`
+	ProjectConsents ProjectConsents `json:"project_consents" has_many:"project_consents"`
 }
 
 // String is not required by pop and may be deleted

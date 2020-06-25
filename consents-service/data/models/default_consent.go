@@ -8,16 +8,17 @@ import (
 	"time"
 )
 
+// DefaultConsent : 	The ORM-side representation of the ConsentStyle data object.
+// 						The consent to secondary use that a participant makes by default, when their data is
+// 						DAC-approved for reuse. The DefaultConsent is used to initialize a ProjectConsent.
 type DefaultConsent struct {
-	ID                     uuid.UUID 			`json:"id" db:"id"`
-	CreatedAt              time.Time 			`json:"created_at" db:"created_at"`
-	UpdatedAt              time.Time 			`json:"updated_at" db:"updated_at"`
-	StudyParticipantID     uuid.UUID 			`json:"study_participant_id" db:"study_participant_id"`
-	StudyParticipant 	   *StudyParticipant 	`json:"study_participant" belongs_to:"study_participant"`
-	GeneticConsentStyleID  uuid.UUID 			`json:"genetic_consent_style_id" db:"genetic_consent_style_id"`
-	GeneticConsentStyle    *ConsentStyle 		`json:"genetic_consent_style" belongs_to:"consent_style"`
-	ClinicalConsentStyleID uuid.UUID 			`json:"clinical_consent_style_id" db:"clinical_consent_style_id"`
-	ClinicalConsentStyle   *ConsentStyle 		`json:"clinical_consent_style" belongs_to:"consent_style"`
+	ID                   uuid.UUID         `json:"id" db:"id"`
+	CreatedAt            time.Time         `json:"created_at" db:"created_at"`
+	UpdatedAt            time.Time         `json:"updated_at" db:"updated_at"`
+	StudyParticipantID   uuid.UUID         `json:"study_participant_id" db:"study_participant_id"`
+	StudyParticipant     *StudyParticipant `json:"study_participant" belongs_to:"study_participant"`
+	GeneticConsentStyle  int               `json:"genetic_consent_style_id" db:"genetic_consent_style_id"`
+	ClinicalConsentStyle int               `json:"clinical_consent_style_id" db:"clinical_consent_style_id"`
 }
 
 // String is not required by pop and may be deleted
@@ -35,10 +36,19 @@ func (d DefaultConsents) String() string {
 	return string(jd)
 }
 
+// TODO Compare the values to some exported? constant defining the limits of the range of enums
+// TODO	Alternately, create a custom validator that compares the value to the permitted range/list of values
+
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (d *DefaultConsent) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+	return validate.Validate(
+		&validators.UUIDIsPresent{Field: d.StudyParticipantID, Name: "StudyParticipantID"},
+		&validators.IntIsGreaterThan{Field: d.GeneticConsentStyle, Name: "GeneticConsentStyle", Compared: 0},
+		&validators.IntIsGreaterThan{Field: d.GeneticConsentStyle, Name: "GeneticConsentStyle", Compared: 0},
+		&validators.IntIsLessThan{Field: d.ClinicalConsentStyle, Name: "ClinicalConsentStyle", Compared: 4},
+		&validators.IntIsLessThan{Field: d.ClinicalConsentStyle, Name: "ClinicalConsentStyle", Compared: 4},
+	), nil
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
