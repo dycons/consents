@@ -4,6 +4,8 @@ go 1.14
 
 require (
 	github.com/cockroachdb/cockroach-go v2.0.1+incompatible
+	github.com/go-openapi/runtime v0.19.19 // indirect
+	github.com/go-swagger/go-swagger v0.24.0 // indirect
 	github.com/gobuffalo/envy v1.9.0
 	github.com/gobuffalo/fizz v1.11.0
 	github.com/gobuffalo/genny v0.6.0
