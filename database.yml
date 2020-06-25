@@ -9,8 +9,18 @@
 # the README or install.sh).
 
 development:
-  dialect: "sqlite3"
-  database: "./consent-service/data/development.sqlite"
-  host: "localhost"
-  port: "8080"
-  
+  dialect: postgres
+  database: consents_development
+  user: {{envOr "POSTGRES_USER" "postgres"}}
+  password: {{envOr "POSTGRES_PASSWORD" "postgres"}}
+  host: database
+  port: 5432
+  pool: 5
+
+# Checks TEST_DATABASE_URL first, then defaults to shown URL if necessary
+#test:
+#  url: {{envOr "TEST_DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/gms_test?sslmode=disable"}}
+
+# Checks DATABASE_URL first, then defaults to shown URL if necessary
+#production:
+#  url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/gms_production?sslmode=disable"}}
