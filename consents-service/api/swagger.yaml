@@ -1,14 +1,15 @@
 consumes:
 - application/json
 info:
+  title: A toy service for consent metadata
   description: A prototype microservice that stores participant data-sharing consent, metadata that may be used to inform row-level data access decisions, with respect for contextual integrity.
-  title: A barebones service for consent metadata
   version: 1.0.0
+basePath: /v0
 produces:
 - application/json
 schemes:
 - http
-openapi: "3.0.2"
+swagger: "2.0" # version used by go-swagger tool
 
 paths:
   /default_consents:
@@ -131,8 +132,9 @@ parameters:
     in: path
     type: string
     format: uuid
-    example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+    x-example: bf3ba75b-8dfe-4619-b832-31c4a087a589
     required: true
+
   default_consent:
     name: default_consent
     in: body
@@ -141,8 +143,9 @@ parameters:
       example:
         study_identifier: bf3ba75b-8dfe-4619-b832-31c4a087a589
         created: "2017-07-21T17:32:28Z"
-        genetic_consent: DNS
-        clinical_consent: DNS
+        genetic_consent_style: "SUF"
+        clinical_consent_style: "SUF"
+
   project_consent:
     name: project_consent
     in: body
@@ -188,16 +191,16 @@ definitions:
         description: Creation time
         example: "2017-07-21T17:32:28Z"
         readOnly: true
-      genetic_consent:
+      genetic_consent_style:
         type: string
-        enum: [OO, OI, DNS]
-        description: Default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
+        enum: [OO, OI, SUF]
+        description: Specifies default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
         example: "SUF"
         default: "SUF"
-      clinical_consent:
+      clinical_consent_style:
         type: string
-        enum: [OO, OI, DNS]
-        description: Default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
+        enum: [OO, OI, SUF]
+        description: Specifies default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
         example: "SUF"
         default: "SUF"
   ProjectConsent:

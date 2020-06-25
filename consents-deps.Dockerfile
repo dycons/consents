@@ -20,7 +20,7 @@ COPY ./go.mod ./go.sum ./
 RUN go mod download
 
 # Install Go-swagger (code-gen of boilerplate server Go code from OpenAPI definition)
-#RUN go install "$GOPATH"/pkg/mod/github.com/go-swagger/go-swagger@v0.23.0/cmd/swagger
+RUN go install "$GOPATH"/pkg/mod/github.com/go-swagger/go-swagger@v0.24.0/cmd/swagger
 
 # Install genny (code-gen solution for generics in Go)
 #RUN go get github.com/CanDIG/genny
