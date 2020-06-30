@@ -185,12 +185,6 @@ definitions:
         format: uuid
         description: Unique identifier that links study data to its consent metadata
         example: bf3ba75b-8dfe-4619-b832-31c4a087a589
-      created:
-        type: string
-        format: date-time
-        description: Creation time
-        example: "2017-07-21T17:32:28Z"
-        readOnly: true
       genetic_consent_style:
         type: string
         enum: [OO, OI, SUF]
@@ -214,12 +208,6 @@ definitions:
         format: uuid
         description: Unique identifier that links study data to its consent metadata
         example: bf3ba75b-8dfe-4619-b832-31c4a087a589
-      created:
-        type: string
-        format: date-time
-        description: Creation time
-        example: "2017-07-21T17:32:28Z"
-        readOnly: true
       application_id:
         type: string
         format: uuid
