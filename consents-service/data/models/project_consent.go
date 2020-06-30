@@ -12,7 +12,6 @@ import (
 
 type ProjectConsent struct {
 	ID                   uuid.UUID         `json:"id" db:"id"`
-	CreatedAt            time.Time         `json:"created_at" db:"created_at"`
 	UpdatedAt            time.Time         `json:"updated_at" db:"updated_at"`
 	StudyParticipantID   uuid.UUID         `json:"study_participant_id" db:"study_participant_id"`
 	StudyParticipant     *StudyParticipant `json:"study_participant" belongs_to:"study_participant"`

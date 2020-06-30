@@ -1,3 +1,4 @@
 create_table("study_participants") {
 	t.Column("id", "uuid", {"primary": true})
+	t.DisableTimestamps()
 })
