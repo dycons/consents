@@ -15,7 +15,7 @@ paths:
   /default_consents:
     post:
       operationId: post_default_consent
-      summary: Add default consent metadata for a study participant
+      summary: Add default consent metadata for a participant
       parameters:
       - $ref: '#/parameters/default_consent'
       responses:
@@ -46,7 +46,7 @@ paths:
           schema:
             $ref: '#/definitions/DefaultConsent'
         404:
-          description: Study participant not found
+          description: Participant not found
           schema:
             $ref: "#/definitions/Error"
         500:
@@ -79,7 +79,7 @@ paths:
         204:
           description: Project consent updated
         404:
-          description: Study participant not found
+          description: Participant not found
           schema:
             $ref: "#/definitions/Error"
         405:
@@ -101,7 +101,7 @@ paths:
           schema:
             $ref: '#/definitions/ProjectConsent'
         404:
-          description: Study participant not found
+          description: Participant not found
           schema:
             $ref: "#/definitions/Error"
         500:
