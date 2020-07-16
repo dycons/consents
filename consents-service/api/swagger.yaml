@@ -3,7 +3,7 @@ consumes:
 info:
   title: A toy service for consent metadata
   description: A prototype microservice that stores participant data-sharing consent, metadata that may be used to inform row-level data access decisions, with respect for contextual integrity.
-  version: 1.0.0
+  version: 0.0.1
 basePath: /v0
 produces:
 - application/json
@@ -15,7 +15,7 @@ paths:
   /default_consents:
     post:
       operationId: post_default_consent
-      summary: Add default consent metadata for a set of research data
+      summary: Add default consent metadata for a study participant
       parameters:
       - $ref: '#/parameters/default_consent'
       responses:
@@ -27,10 +27,6 @@ paths:
             Location:
               type: string
               format: url
-        404:
-          description: Linked study participant not found
-          schema:
-            $ref: "#/definitions/Error"
         405:
           description: Forbidden to overwrite default consent in post
           schema:
@@ -40,10 +36,10 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /default_consents/{study_identifier}:
+  /participants/{study_identifier}/default_consents:
     get:
       operationId: get_one_default_consent
-      summary: Get specific default consent by its associated study_identifier
+      summary: Get participant's default consent metadata
       parameters:
       - $ref: '#/parameters/study_identifier'
       responses: 
@@ -60,15 +56,30 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /project_consents:
+  /participants/{study_identifier}/project_consents:
+    # TODO what if participant is a part of multiple datasets? Should we be keeping track of catalogue-item as well?
     post:
-      operationId: post_project_consent
-      summary: Add project-specific consent metadata for a set of research data
+      operationId: initialize_project_consent
+      summary: Initialize application/project-specific consents for a participant
       parameters:
-      - $ref: '#/parameters/project_consent'
+      - $ref: '#/parameters/study_identifier'
+      - $ref: '#/parameters/application_id'
       responses:
         201:
-          description: New project consent created
+          description: Project consent created
+          headers:
+            Location:
+              type: string
+              format: url
+    put:
+      operationId: put_project_consent
+      summary: Update participant's project-specific consent metadata
+      parameters:
+      - $ref: '#/parameters/study_identifier'
+      - $ref: '#/parameters/project_consent'
+      responses:
+        200:
+          description: Project consent updated
           schema:
             $ref: '#/definitions/ProjectConsent'
           headers:
@@ -76,37 +87,20 @@ paths:
               type: string
               format: url
         404:
-          description: Linked study participant not found
+          description: Study participant not found
           schema:
             $ref: "#/definitions/Error"
         405:
-          description: Forbidden to overwrite project consent in post
+          description: Forbidden to post project consent; see /project_consents/initialize endpoint instead.
           schema:
             $ref: "#/definitions/Error"
         500:
           description: Internal error - project consent not created
           schema:
             $ref: "#/definitions/Error"
-    get: # Only App Services (Jonathan's microservices) should be authz'd to make this call
-      operationId: get_project_consents
-      summary: Get all project consents
-      responses:
-        200:
-          description: Return project consents
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ProjectConsent'
-            example: []
-        500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
-
-  /project-consents/{study_identifier}:
     get:
       operationId: get_project_consents_by_participant
-      summary: Get all project consents for a particular participant, by their associated study_identifier
+      summary: Get all project consents for a particular participant
       parameters:
       - $ref: '#/parameters/study_identifier'
       responses: 
@@ -123,8 +117,6 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  # TODO do we need /project-consents/{application_id}? ie. does application services need to download consents by secondary project?
-
 parameters:
   study_identifier:
     name: study_identifier
@@ -135,14 +127,22 @@ parameters:
     x-example: bf3ba75b-8dfe-4619-b832-31c4a087a589
     required: true
 
+  application_id:
+    name: application_id
+    description: REMS ID for the data access application associated with this project
+    in: body
+    schema:
+      type: string
+      format: uuid
+      x-example: 1
+    required: true
+
   default_consent:
     name: default_consent
     in: body
     schema:
       $ref: '#/definitions/DefaultConsent'
       example:
-        study_identifier: bf3ba75b-8dfe-4619-b832-31c4a087a589
-        created: "2017-07-21T17:32:28Z"
         genetic_consent_style: "SUF"
         clinical_consent_style: "SUF"
 
@@ -152,8 +152,6 @@ parameters:
     schema:
       $ref: '#/definitions/ProjectConsent'
       example:
-        study_identifier: bf3ba75b-8dfe-4619-b832-31c4a087a589
-        created: "2017-07-21T17:32:28Z"
         application_id: bf3ba75b-8dfe-4619-b832-31c4a087a589
         genetic_consent: false
         clinical_consent: false
@@ -177,14 +175,7 @@ definitions:
         example: "Forbidden to modify existing default consent on post"
   DefaultConsent:
     type: object
-    required:
-      - study_identifier
     properties:
-      study_identifier:
-        type: string
-        format: uuid
-        description: Unique identifier that links study data to its consent metadata
-        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
       genetic_consent_style:
         type: string
         enum: [OO, OI, SUF]
@@ -200,14 +191,8 @@ definitions:
   ProjectConsent:
     type: object
     required:
-      - study_identifier
       - application_id
     properties:
-      study_identifier:
-        type: string
-        format: uuid
-        description: Unique identifier that links study data to its consent metadata
-        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
       application_id:
         type: string
         format: uuid
