@@ -21,8 +21,6 @@ paths:
       responses:
         201:
           description: New default consent created
-          schema:
-            $ref: '#/definitions/DefaultConsent'
           headers:
             Location:
               type: string
@@ -78,14 +76,8 @@ paths:
       - $ref: '#/parameters/study_identifier'
       - $ref: '#/parameters/project_consent'
       responses:
-        200:
+        204:
           description: Project consent updated
-          schema:
-            $ref: '#/definitions/ProjectConsent'
-          headers:
-            Location:
-              type: string
-              format: url
         404:
           description: Study participant not found
           schema:
