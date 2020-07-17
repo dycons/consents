@@ -38,24 +38,24 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.GetOneDefaultConsent has not yet been implemented")
 		})
 	}
-	if api.GetProjectConsentsHandler == nil {
-		api.GetProjectConsentsHandler = operations.GetProjectConsentsHandlerFunc(func(params operations.GetProjectConsentsParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.GetProjectConsents has not yet been implemented")
-		})
-	}
 	if api.GetProjectConsentsByParticipantHandler == nil {
 		api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
 			return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
 		})
 	}
-	if api.PostDefaultConsentHandler == nil {
-		api.PostDefaultConsentHandler = operations.PostDefaultConsentHandlerFunc(func(params operations.PostDefaultConsentParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.PostDefaultConsent has not yet been implemented")
+	if api.InitializeProjectConsentHandler == nil {
+		api.InitializeProjectConsentHandler = operations.InitializeProjectConsentHandlerFunc(func(params operations.InitializeProjectConsentParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.InitializeProjectConsent has not yet been implemented")
 		})
 	}
-	if api.PostProjectConsentHandler == nil {
-		api.PostProjectConsentHandler = operations.PostProjectConsentHandlerFunc(func(params operations.PostProjectConsentParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.PostProjectConsent has not yet been implemented")
+	if api.PostParticipantHandler == nil {
+		api.PostParticipantHandler = operations.PostParticipantHandlerFunc(func(params operations.PostParticipantParams) middleware.Responder {
+			return handlers.PostParticipant(params)
+		})
+	}
+	if api.PutProjectConsentHandler == nil {
+		api.PutProjectConsentHandler = operations.PutProjectConsentHandlerFunc(func(params operations.PutProjectConsentParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.PutProjectConsent has not yet been implemented")
 		})
 	}
 

@@ -11,7 +11,7 @@ import (
 type Participant struct {
 	ID              uuid.UUID       `json:"id" db:"id"`
 	DefaultConsent  DefaultConsent  `json:"default_consent" has_one:"default_consent"`
-	ProjectConsents ProjectConsents `json:"project_consents" has_many:"project_consents"`
+	ProjectConsents ProjectConsents `json:"project_consents,omitempty" has_many:"project_consents"`
 }
 
 // String is not required by pop and may be deleted
