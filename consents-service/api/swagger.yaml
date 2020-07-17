@@ -12,21 +12,29 @@ schemes:
 swagger: "2.0" # version used by go-swagger tool
 
 paths:
-  /default_consents:
+  /participants:
     post:
-      operationId: post_default_consent
-      summary: Add default consent metadata for a participant
+      operationId: post_participant
+      summary: Add a participant, along with their default consent metadata
       parameters:
-      - $ref: '#/parameters/default_consent'
+        - name: default_consent
+          in: body
+          schema:
+            $ref: '#/definitions/DefaultConsent'
+            example:
+              genetic_consent_style: "SUF"
+              clinical_consent_style: "SUF"
       responses:
         201:
           description: New default consent created
+          schema:
+            $ref: '#/definitions/Participant'
           headers:
             Location:
               type: string
               format: url
         405:
-          description: Forbidden to overwrite default consent in post
+          description: Forbidden to overwrite participant in post
           schema:
             $ref: "#/definitions/Error"
         500:
@@ -39,7 +47,7 @@ paths:
       operationId: get_one_default_consent
       summary: Get participant's default consent metadata
       parameters:
-      - $ref: '#/parameters/study_identifier'
+        - $ref: '#/parameters/study_identifier'
       responses: 
         200:
           description: Return default consent
@@ -60,8 +68,15 @@ paths:
       operationId: initialize_project_consent
       summary: Initialize application/project-specific consents for a participant
       parameters:
-      - $ref: '#/parameters/study_identifier'
-      - $ref: '#/parameters/application_id'
+        - $ref: '#/parameters/study_identifier'
+        - name: application_id
+          description: REMS ID for the data access application associated with this project
+          in: body
+          schema:
+            type: string
+            format: uuid
+            x-example: 1
+          required: true
       responses:
         201:
           description: Project consent created
@@ -73,8 +88,15 @@ paths:
       operationId: put_project_consent
       summary: Update participant's project-specific consent metadata
       parameters:
-      - $ref: '#/parameters/study_identifier'
-      - $ref: '#/parameters/project_consent'
+        - $ref: '#/parameters/study_identifier'
+        - name: project_consent
+          in: body
+          schema:
+            $ref: '#/definitions/ProjectConsent'
+            example:
+              application_id: bf3ba75b-8dfe-4619-b832-31c4a087a589
+              genetic_consent: false
+              clinical_consent: false
       responses:
         204:
           description: Project consent updated
@@ -119,35 +141,6 @@ parameters:
     x-example: bf3ba75b-8dfe-4619-b832-31c4a087a589
     required: true
 
-  application_id:
-    name: application_id
-    description: REMS ID for the data access application associated with this project
-    in: body
-    schema:
-      type: string
-      format: uuid
-      x-example: 1
-    required: true
-
-  default_consent:
-    name: default_consent
-    in: body
-    schema:
-      $ref: '#/definitions/DefaultConsent'
-      example:
-        genetic_consent_style: "SUF"
-        clinical_consent_style: "SUF"
-
-  project_consent:
-    name: project_consent
-    in: body
-    schema:
-      $ref: '#/definitions/ProjectConsent'
-      example:
-        application_id: bf3ba75b-8dfe-4619-b832-31c4a087a589
-        genetic_consent: false
-        clinical_consent: false
-
 definitions:
   Error:
     type: object
@@ -165,6 +158,18 @@ definitions:
         type: string
         description: Human-readable informational error message
         example: "Forbidden to modify existing default consent on post"
+  Participant:
+    type: object
+    required:
+      - study_identifier
+    properties:
+      study_identifier:
+        type: string
+        format: uuid
+        description: UUID for all research data and metadata affiliated with a participant
+        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+      default_consent:
+        $ref: '#/definitions/DefaultConsent'
   DefaultConsent:
     type: object
     properties:
