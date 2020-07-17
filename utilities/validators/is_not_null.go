@@ -7,7 +7,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 )
 
-// IsNotNull packages wraps Nulls type (ie. any type that implements the nullable interface) with its name and message for validation
+// IsNotNull packages Nulls type (ie. any type that implements the nullable interface) with its name and message for validation.
 // To call this validator on a nullable value, set Field: nulls.Nulls{Value: <nullable>}, where <nullable> could be nulls.Int, nulls.String, etc.
 type IsNotNull struct {
 	Name    string
