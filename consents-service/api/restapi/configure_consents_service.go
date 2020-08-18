@@ -10,10 +10,11 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
+	"github.com/dycons/consents/consents-service/api/restapi/handlers"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../api --name ConsentsService --spec ../swagger.yaml
+//go:generate swagger generate server --target ../../swagger-tests --name ConsentsService --spec ../swagger.yaml
 
 func configureFlags(api *operations.ConsentsServiceAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -33,31 +34,21 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.GetOneDefaultConsentHandler == nil {
-		api.GetOneDefaultConsentHandler = operations.GetOneDefaultConsentHandlerFunc(func(params operations.GetOneDefaultConsentParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.GetOneDefaultConsent has not yet been implemented")
-		})
-	}
-	if api.GetProjectConsentsByParticipantHandler == nil {
-		api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
-		})
-	}
-	if api.InitializeProjectConsentHandler == nil {
-		api.InitializeProjectConsentHandler = operations.InitializeProjectConsentHandlerFunc(func(params operations.InitializeProjectConsentParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.InitializeProjectConsent has not yet been implemented")
-		})
-	}
-	if api.PostParticipantHandler == nil {
-		api.PostParticipantHandler = operations.PostParticipantHandlerFunc(func(params operations.PostParticipantParams) middleware.Responder {
-			return handlers.PostParticipant(params)
-		})
-	}
-	if api.PutProjectConsentHandler == nil {
-		api.PutProjectConsentHandler = operations.PutProjectConsentHandlerFunc(func(params operations.PutProjectConsentParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.PutProjectConsent has not yet been implemented")
-		})
-	}
+	api.GetOneDefaultConsentHandler = operations.GetOneDefaultConsentHandlerFunc(func(params operations.GetOneDefaultConsentParams) middleware.Responder {
+		return middleware.NotImplemented("operation operations.GetOneDefaultConsent has not yet been implemented")
+	})
+	api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
+		return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
+	})
+	api.InitializeProjectConsentHandler = operations.InitializeProjectConsentHandlerFunc(func(params operations.InitializeProjectConsentParams) middleware.Responder {
+		return middleware.NotImplemented("operation operations.InitializeProjectConsent has not yet been implemented")
+	})
+	api.PostParticipantHandler = operations.PostParticipantHandlerFunc(func(params operations.PostParticipantParams) middleware.Responder {
+		return handlers.PostParticipant(params)
+	})
+	api.PutProjectConsentHandler = operations.PutProjectConsentHandlerFunc(func(params operations.PutProjectConsentParams) middleware.Responder {
+		return middleware.NotImplemented("operation operations.PutProjectConsent has not yet been implemented")
+	})
 
 	api.PreServerShutdown = func() {}
 

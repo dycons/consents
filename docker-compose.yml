@@ -16,12 +16,12 @@ services:
       - "5432:5432"
     volumes:
       - database-data:/var/lib/postgresql/data/
-  gms-webapp:
+  consents-webapp:
     build:
       context: .
       target: webapp
-#      args:
-#        - API_PATH=${PROJECT_ROOT}/model-vs/api
+      args:
+        - API_PATH=${PROJECT_ROOT}/consents-service/api
     env_file:
       - .env
     environment:
@@ -31,5 +31,7 @@ services:
       - database
     ports:
       - "3001:3001"
+    # TODO rm, make dev service with priviledge
+    privileged: true
 volumes:
   database-data:

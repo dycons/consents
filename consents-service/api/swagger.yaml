@@ -26,17 +26,13 @@ paths:
               clinical_consent_style: "SUF"
       responses:
         201:
-          description: New default consent created
+          description: New participant created
           schema:
             $ref: '#/definitions/Participant'
           headers:
             Location:
               type: string
               format: url
-        405:
-          description: Forbidden to overwrite participant in post
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: Internal error - default consent not created
           schema:
@@ -168,8 +164,7 @@ definitions:
         format: uuid
         description: UUID for all research data and metadata affiliated with a participant
         example: bf3ba75b-8dfe-4619-b832-31c4a087a589
-      default_consent:
-        $ref: '#/definitions/DefaultConsent'
+        readOnly: true
   DefaultConsent:
     type: object
     properties:

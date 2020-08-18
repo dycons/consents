@@ -19,10 +19,10 @@ help ()
    echo "Options:"
    echo "   -h      Display this help text"
    echo "   -b      Build image prior to push"
-   echo "   -M      Major version (semantic). Default: 1"
-   echo "   -m      minor version (semantic). Default: 1"
+   echo "   -M      Major version (semantic). Default: 0"
+   echo "   -m      minor version (semantic). Default: 0"
    echo "   -f      Dockerfile filename. Default: ./Dockerfile"
-   echo "   -u      Docker username. Default: katpavlov"
+   echo "   -u      Docker username/organization name to push to. Default: dyconsent"
    echo
 }
 
@@ -32,8 +32,8 @@ help ()
 ################################################################################
 ################################################################################
 
-# Default Docker username. Can overwrite with -u argument.
-username="katpavlov"
+# Default Docker username/organization name to push to. Can overwrite with -u argument.
+username="dyconsent"
 # Default image version. Can overwrite with -M -m -p arguments.
 Major="0"
 minor="0"

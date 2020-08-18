@@ -1,10 +1,15 @@
 ### This is the main Dockerfile for the go-model-service app,
 ### excluding the database which is built seperately.
+# Build and run from project root with either:
+# (1)   docker-compose up
+# (2)   # Comment out ENTRYPOINT if running interactively (-it)
+#       docker build -t dyconsent/consents-webapp --build-arg API_PATH=/go/src/github.com/dycons/consents/consents-service/api .
+#       docker run -it --rm dyconsent/consents-webapp
 
 # Modify this line if you want to use a different stack/dependencies-image
-FROM katpavlov/consents-deps AS webapp
+FROM dyconsent/consents-deps AS webapp
 
-#ARG API_PATH
+ARG API_PATH
 
 WORKDIR /go/src/github.com/dycons/consents
 COPY . .
@@ -18,7 +23,7 @@ RUN go mod download
 # This will generate a server named consents-service. The name is important for
 # maintaining compatibility with the configure_consents_service.go middleware
 # configuration file.
-RUN cd "$API_PATH" && swagger generate server -A consents-service swagger.yml
+RUN cd "$API_PATH" && pwd && swagger generate server -A consents-service swagger.yaml
 
 # Run a script to generate resource-specific request handlers for middleware,
 # from the generic handlers defined in the consents-service/api/generics package,
@@ -27,8 +32,8 @@ RUN cd "$API_PATH" && swagger generate server -A consents-service swagger.yml
 
 # Now that all the necessary boilerplate code has been auto-generated, compile
 # the server
-#RUN go build -o ./main "$API_PATH"/cmd/consents-service-server/main.go
+RUN go build -gcflags="all=-N -l" -o ./main "$API_PATH"/cmd/consents-service-server/main.go
 
 # Run the consents service
-#EXPOSE 3000
-#ENTRYPOINT ./main --port=3000 --host=0.0.0.0
+EXPOSE 3001
+ENTRYPOINT ./main --port=3001 --host=0.0.0.0
