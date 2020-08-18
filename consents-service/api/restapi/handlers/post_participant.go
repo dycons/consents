@@ -1,15 +1,18 @@
 package handlers
 
 import (
-	apimodels "github.com/dycons/consents/model-vs/api/models"
+	"net/http" // TODO rm
+
+	apimodels "github.com/dycons/consents/consents-service/api/models"
+	"github.com/dycons/consents/consents-service/api/restapi/operations"
+	"github.com/dycons/consents/consents-service/api/restapi/utilities"
 	datamodels "github.com/dycons/consents/consents-service/data/models" // TODO rm
-	"github.com/dycons/consents/model-vs/api/restapi/operations"
+	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers" // TODO rm
-	"github.com/dycons/consents/model-vs/api/restapi/utilities"
-	"github.com/dycons/consents/model-vs/errors"
 	"github.com/dycons/consents/utilities/log"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/sirupsen/logrus"
+	"github.com/go-openapi/strfmt" // TODO rm
+	"github.com/gobuffalo/pop"     // TODO rm
 )
 
 // PostParticipant processes a Participant+DefaultConsent resource posted by the API request and creates it into the database.
@@ -17,18 +20,20 @@ import (
 func PostParticipant(params operations.PostParticipantParams) middleware.Responder {
 	tx, errPayload := utilities.ConnectDevelopment(params.HTTPRequest)
 	if errPayload != nil {
-		return operations.NewPostParticipantServerError().WithPayload(errPayload)
+		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
 
 	// Transform DefaultConsent model API -> data
 	newDefaultConsent, errPayload := defaultConsentAPIToDataModel(*params.DefaultConsent, params.HTTPRequest, tx)
-	if errPayload != {
+	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
-	*newDefaultConsent.Participant := *Participant{}
+	newParticipant := &datamodels.Participant{
+		DefaultConsent: *newDefaultConsent,
+	}
 
-	// Eager create DefaultConsent+Participant in DB. Only proceed if creation succeeds.
-	err := tx.Eager().Create(newDefaultConsent)
+	// Eager create Participant+DefaultConsent in DB. Only proceed if creation succeeds.
+	err := tx.Eager().Create(newParticipant)
 	if err != nil {
 		log.Write(params.HTTPRequest, 500000, err).Error("Creating into database failed")
 		errPayload := errors.DefaultInternalServerError()
@@ -36,12 +41,12 @@ func PostParticipant(params operations.PostParticipantParams) middleware.Respond
 	}
 
 	// Return Participant (with only the StudyIdentifier property populated) and Location URL header
-	createdParticipant, errPayload := participantDataToAPIModel(datamodels.Participant{ID: *newDefaultConsent.ParticipantID})
-	if errPayload != {
+	createdParticipant, errPayload := participantDataToAPIModel(*newParticipant, params.HTTPRequest)
+	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
 	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() +
-		"/" + createdParticipant.StudyIdentifier.String() + "/default_consents"
+		"/" + createdParticipant.StudyIdentifier.String()
 	return operations.NewPostParticipantCreated().WithPayload(createdParticipant).WithLocation(location)
 }
 
@@ -55,7 +60,7 @@ func PostParticipant(params operations.PostParticipantParams) middleware.Respond
 // An *apimodels.Error pointer is returned alongside the transformed DefaultConsent for ease of error
 // response, as it can be used as the response payload immediately.
 func defaultConsentAPIToDataModel(apiDefaultConsent apimodels.DefaultConsent, HTTPRequest *http.Request, tx *pop.Connection) (*datamodels.DefaultConsent, *apimodels.Error) {
-	dataDefaultConsent, err := transformers.defaultConsentAPIToData(apiDefaultConsent)
+	dataDefaultConsent, err := transformers.DefaultConsentAPIToData(apiDefaultConsent)
 	if err != nil {
 		log.Write(HTTPRequest, 500000, err).Error("Failed transformation of DefaultConsent from api to data model")
 		errPayload := errors.DefaultInternalServerError()

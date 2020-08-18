@@ -2,11 +2,12 @@ package models
 
 import (
 	"encoding/json"
-	customValidators "github.com/CanDIG/go-model-service/utilities/validators"
+	customValidators "github.com/dycons/consents/utilities/validators"
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
+	"github.com/gobuffalo/validate/validators"
 	"time"
 )
 

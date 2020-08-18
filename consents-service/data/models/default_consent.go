@@ -18,17 +18,14 @@ type DefaultConsent struct {
 	UpdatedAt            time.Time    `json:"updated_at" db:"updated_at"`
 	ParticipantID        uuid.UUID    `json:"participant_id" db:"participant_id"`
 	Participant          *Participant `json:"participant" belongs_to:"participant"`
-	GeneticConsentStyle  ConsentStyle `json:"genetic_consent_style" db:"genetic_consent_style"`
-	ClinicalConsentStyle ConsentStyle `json:"clinical_consent_style" db:"clinical_consent_style"`
+	GeneticConsentStyle  int          `json:"genetic_consent_style" db:"genetic_consent_style"`
+	ClinicalConsentStyle int          `json:"clinical_consent_style" db:"clinical_consent_style"`
 }
 
-// ConsentStyle :	An Enum type for the styles of default consent that may be used to initialize
-//  				participation in new secondary-use projects.
-type ConsentStyle int
-
-// These constants capture the enum values for the genetic & clinical Consent Styles.
+// These constants capture the enum values for the genetic & clinical "Consent Styles",
+// 		the styles of default consent that may be used to initialize participation in new secondary-use projects.
 const (
-	start ConsentStyle = iota // start enum, only used in validation
+	start int = iota // start enum, only used in validation
 
 	// SecondaryUseForbidden :	Do not ever share associated data with new secondary projects.
 	SecondaryUseForbidden
@@ -43,11 +40,6 @@ const (
 
 	end // end enum, only used in validation
 )
-
-// String :	Describe a ConsentStyle enum in terms of its string name
-func (c ConsentStyle) String() string {
-	return [...]string{"SecondaryUseForbidden", "OptIn", "OptOut"}[c]
-}
 
 // String is not required by pop and may be deleted
 func (d DefaultConsent) String() string {
@@ -69,8 +61,8 @@ func (d DefaultConsents) String() string {
 func (d *DefaultConsent) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.UUIDIsPresent{Field: d.ParticipantID, Name: "ParticipantID"},
-		&customValidators.EnumIsInRange{Field: int(d.GeneticConsentStyle), Name: "GeneticConsentStyle", Start: int(start), End: int(end)},
-		&customValidators.EnumIsInRange{Field: int(d.ClinicalConsentStyle), Name: "ClinicalConsentStyle", Start: int(start), End: int(end)},
+		&customValidators.EnumIsInRange{Field: d.GeneticConsentStyle, Name: "GeneticConsentStyle", Start: start, End: end},
+		&customValidators.EnumIsInRange{Field: d.ClinicalConsentStyle, Name: "ClinicalConsentStyle", Start: start, End: end},
 	), nil
 }
 
