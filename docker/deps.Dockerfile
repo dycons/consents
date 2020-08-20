@@ -1,4 +1,4 @@
-### This is Dockerfile builds the stack & dependencies for the go-model-service
+### This Dockerfile builds the stack & dependencies for the go-model-service
 
 # Build from project root and push to Docker Hub:
 # 	docker login && ./push-image.sh -b -f ./consents-deps.Dockerfile -u <username> gms-deps <patch>
