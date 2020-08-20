@@ -1,0 +1,4 @@
+# Ignore everything except for the files detailing the dependencies desired in the image
+*
+!go.mod
+!go.sum

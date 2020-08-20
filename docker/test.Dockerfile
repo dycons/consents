@@ -3,11 +3,11 @@
 # Build and run from project root with either:
 # (1)   docker-compose up
 # (2)   # Comment out ENTRYPOINT if running interactively (-it)
-#       docker build -t dyconsent/consents-webapp --build-arg API_PATH=/go/src/github.com/dycons/consents/consents-service/api .
-#       docker run -it --rm dyconsent/consents-webapp
+#       docker build -t dyconsent/consents-app --build-arg API_PATH=/go/src/github.com/dycons/consents/consents-service/api .
+#       docker run -it --rm dyconsent/consents-app
 
 # Modify this line if you want to use a different stack/dependencies-image
-FROM dyconsent/consents-deps AS webapp
+FROM dyconsent/consents-deps AS consents-app
 
 ARG API_PATH
 
@@ -32,8 +32,8 @@ RUN cd "$API_PATH" && pwd && swagger generate server -A consents-service swagger
 
 # Now that all the necessary boilerplate code has been auto-generated, compile
 # the server
-RUN go build -gcflags="all=-N -l" -o ./main "$API_PATH"/cmd/consents-service-server/main.go
+RUN go build -o ./app "$API_PATH"/cmd/consents-service-server/main.go
 
 # Run the consents service
 EXPOSE 3001
-ENTRYPOINT ./main --port=3001 --host=0.0.0.0
+ENTRYPOINT ./app --port=3001 --host=0.0.0.0

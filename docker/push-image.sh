@@ -9,8 +9,8 @@ help ()
    echo "Build, tag, and push a docker image."
    echo
    echo "Usage:"
-   echo "   ./push-image.sh [options] IMAGE PATCH"
-   echo "   docker login && ./push-image.sh [options] IMAGE PATCH"
+   echo "   ./docker/push-image.sh [options] IMAGE PATCH"
+   echo "   docker login && ./docker/push-image.sh [options] IMAGE PATCH"
    echo "It may be necessary to run the following command before running this script:"
    echo "   docker login"
    echo "Mandatory positional arguments:"
@@ -21,7 +21,7 @@ help ()
    echo "   -b      Build image prior to push"
    echo "   -M      Major version (semantic). Default: 0"
    echo "   -m      minor version (semantic). Default: 0"
-   echo "   -f      Dockerfile filename. Default: ./Dockerfile"
+   echo "   -f      Dockerfile filename. Default: ./docker/deps.Dockerfile"
    echo "   -u      Docker username/organization name to push to. Default: dyconsent"
    echo
 }
@@ -38,7 +38,7 @@ username="dyconsent"
 Major="0"
 minor="0"
 # Default Dockerfile name. Can overwrite with -f argument.
-Dockerfile="./Dockerfile"
+Dockerfile="./docker/deps.Dockerfile"
 # Flag for whether to build the image prior to attempting push
 build=false
 

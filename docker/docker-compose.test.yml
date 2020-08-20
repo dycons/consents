@@ -1,0 +1,36 @@
+# Build from project root with:
+#     docker-compose -f docker/docker-compose.test.yml up 
+# or, with forced re-build of apps:
+#     docker-compose -f docker/docker-compose.test.yml up --force-recreate --build
+# Use push-image.sh to push images to Docker Hub:
+#     docker login && ./docker/push-image.sh -f ./docker/test.Dockerfile -u <username> consents-webapp <patch>
+
+version: "3.7"
+services:
+  consents-database:
+    # Use postgres 11.7 image to match stable postgres-client debian
+    image: "postgres:11.7-alpine"
+    env_file:
+      - ../.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - consents-database-data:/var/lib/postgresql/data/
+  consents-app:
+    build:
+      context: ..
+      dockerfile: ./docker/test.Dockerfile
+      target: consents-app
+      args:
+        - API_PATH=${PROJECT_ROOT}/consents-service/api    
+    env_file:
+      - ../.env
+    environment:
+      - POP_PATH=${PROJECT_ROOT}
+      - APP_PATH=${PROJECT_ROOT}/consents-service
+    depends_on:
+      - consents-database
+    ports:
+      - "3001:3001"
+volumes:
+  consents-database-data:

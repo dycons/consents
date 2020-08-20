@@ -4,7 +4,7 @@
 # For more information: https://github.com/gobuffalo/pop/blob/master/config.go
 
 # This file must be kept in the same directory as the main file being run. Otherwise, the database
-# (development.sqlite) will not be found when the program is run.
+# will not be found when the program is run.
 # To meet the requirements above (line 3), $POP_PATH is set upon installation of the service (see
 # the README or install.sh).
 
@@ -13,7 +13,7 @@ development:
   database: consents_development
   user: {{envOr "POSTGRES_USER" "postgres"}}
   password: {{envOr "POSTGRES_PASSWORD" "postgres"}}
-  host: database
+  host: consents-database
   port: 5432
   pool: 5
 
