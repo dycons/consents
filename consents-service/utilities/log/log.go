@@ -22,15 +22,15 @@ func Init() {
 // Write employs logrus to produce a logger in a consistent format.
 // This logger extracts pertinent HTTP request information from the net/http Request parameter
 // provided in go-swagger auto-generated *_parameters.go files.
-func Write(HTTPRequest *http.Request, httpCode int, err error) *logrus.Entry {
+func Write(HTTPRequest *http.Request, code int64, err error) *logrus.Entry {
 	entry := logrus.WithFields(logrus.Fields{
 		"service": "consents-service",
 		"version": "0.0.1",
 		"host":    HTTPRequest.Host,
 		"ip":      HTTPRequest.RemoteAddr})
 
-	if httpCode != 0 {
-		entry = entry.WithField("httpCode", strconv.Itoa(httpCode))
+	if code != 0 {
+		entry = entry.WithField("code", strconv.Itoa(int(code)))
 	}
 
 	if err != nil {
