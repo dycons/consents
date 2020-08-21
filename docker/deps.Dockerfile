@@ -13,7 +13,8 @@ FROM golang as consents-deps
 ENV GOPATH=/go
 
 WORKDIR /go/src/github.com/dycons/consents
-COPY ./go.mod ./go.sum ./
+# See deps.Dockerfile.dockerignore to see which files are included in this COPY
+COPY . .
 
 # Use the mod tool to fetch/cache all project import dependencies into 
 # 	$GOPATH/pkg/mod

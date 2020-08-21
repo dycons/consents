@@ -12,6 +12,7 @@ FROM dyconsent/consents-deps AS consents-app
 ARG API_PATH
 
 WORKDIR /go/src/github.com/dycons/consents
+# See test.Dockerfile.dockerignore to see which files are included in this COPY
 COPY . .
 
 # Check that all dependencies are present.

@@ -9,7 +9,7 @@ import (
 	datamodels "github.com/dycons/consents/consents-service/data/models" // TODO rm
 	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers" // TODO rm
-	"github.com/dycons/consents/utilities/log"
+	"github.com/dycons/consents/consents-service/utilities/log"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt" // TODO rm
 	"github.com/gobuffalo/pop"     // TODO rm

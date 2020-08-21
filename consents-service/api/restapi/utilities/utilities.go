@@ -6,7 +6,7 @@ package utilities
 import (
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/errors"
-	"github.com/dycons/consents/utilities/log"
+	"github.com/dycons/consents/consents-service/utilities/log"
 	"github.com/gobuffalo/pop"
 	"net/http"
 )

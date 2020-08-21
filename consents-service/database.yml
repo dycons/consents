@@ -5,8 +5,7 @@
 
 # This file must be kept in the same directory as the main file being run. Otherwise, the database
 # will not be found when the program is run.
-# To meet the requirements above (line 3), $POP_PATH is set upon installation of the service (see
-# the README or install.sh).
+# To meet the requirements above (line 3), $APP_PATH is explicitly defined in the docker-compose.yml file.
 
 development:
   dialect: postgres
