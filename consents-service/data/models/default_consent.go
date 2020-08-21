@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	customValidators "github.com/dycons/consents/utilities/validators"
+	customValidators "github.com/dycons/consents/consents-service/utilities/validators"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"

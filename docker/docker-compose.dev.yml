@@ -24,7 +24,6 @@ services:
     env_file:
       - ../.env
     environment:
-      - POP_PATH=${PROJECT_ROOT}
       - APP_PATH=${PROJECT_ROOT}/consents-service
     depends_on:
       - consents-database
