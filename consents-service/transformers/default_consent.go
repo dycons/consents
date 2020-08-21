@@ -41,3 +41,36 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent) (*datam
 		GeneticConsentStyle:  dataGeneticConsentStyle,
 		ClinicalConsentStyle: dataClinicalConsentStyle}, nil
 }
+
+// DefaultConsentDataToAPI contains the model-building step of the data-model-to-api-model transformer.
+func DefaultConsentDataToAPI(dataDefaultConsent datamodels.DefaultConsent) (*apimodels.DefaultConsent, error) {
+	var apiGeneticConsentStyle string
+	switch dataDefaultConsent.GeneticConsentStyle {
+	case datamodels.SecondaryUseForbidden:
+		apiGeneticConsentStyle = apimodels.DefaultConsentGeneticConsentStyleSUF
+	case datamodels.OptIn:
+		apiGeneticConsentStyle = apimodels.DefaultConsentGeneticConsentStyleOI
+	case datamodels.OptOut:
+		apiGeneticConsentStyle = apimodels.DefaultConsentGeneticConsentStyleOO
+	default:
+		message := "Transformation of GeneticConsentStyle from data to api model fails to yield valid enum."
+		return nil, errors.New(message)
+	}
+
+	var apiClinicalConsentStyle string
+	switch dataDefaultConsent.ClinicalConsentStyle {
+	case datamodels.SecondaryUseForbidden:
+		apiClinicalConsentStyle = apimodels.DefaultConsentClinicalConsentStyleSUF
+	case datamodels.OptIn:
+		apiClinicalConsentStyle = apimodels.DefaultConsentClinicalConsentStyleOI
+	case datamodels.OptOut:
+		apiClinicalConsentStyle = apimodels.DefaultConsentClinicalConsentStyleOO
+	default:
+		message := "Transformation of ClinicalConsentStyle from data to api model fails to yield valid enum."
+		return nil, errors.New(message)
+	}
+
+	return &apimodels.DefaultConsent{
+		GeneticConsentStyle:  &apiGeneticConsentStyle,
+		ClinicalConsentStyle: &apiClinicalConsentStyle}, nil
+}

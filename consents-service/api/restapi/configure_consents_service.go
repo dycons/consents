@@ -35,7 +35,7 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.GetOneDefaultConsentHandler = operations.GetOneDefaultConsentHandlerFunc(func(params operations.GetOneDefaultConsentParams) middleware.Responder {
-		return middleware.NotImplemented("operation operations.GetOneDefaultConsent has not yet been implemented")
+		return handlers.GetOneDefaultConsent(params)
 	})
 	api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
 		return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
