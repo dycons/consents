@@ -3,26 +3,21 @@ package handlers
 import (
 	"net/http" // TODO rm
 
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt" // TODO rm
+	"github.com/gobuffalo/pop"     // TODO rm
+
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
-	"github.com/dycons/consents/consents-service/api/restapi/utilities"
 	datamodels "github.com/dycons/consents/consents-service/data/models" // TODO rm
 	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers" // TODO rm
 	"github.com/dycons/consents/consents-service/utilities/log"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt" // TODO rm
-	"github.com/gobuffalo/pop"     // TODO rm
 )
 
 // PostParticipant processes a Participant+DefaultConsent resource posted by the API request and creates it into the database.
 // It then returns the URL location of this Participant, along with its uuid (the {study_identifier} parameter in the API).
-func PostParticipant(params operations.PostParticipantParams) middleware.Responder {
-	tx, errPayload := utilities.ConnectDevelopment(params.HTTPRequest)
-	if errPayload != nil {
-		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
-	}
-
+func PostParticipant(params operations.PostParticipantParams, tx *pop.Connection) middleware.Responder {
 	// Transform DefaultConsent model API -> data
 	newDefaultConsent, errPayload := defaultConsentAPIToDataModel(*params.DefaultConsent, params.HTTPRequest, tx)
 	if errPayload != nil {

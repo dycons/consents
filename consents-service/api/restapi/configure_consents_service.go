@@ -9,9 +9,11 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/gobuffalo/pop"
 
 	"github.com/dycons/consents/consents-service/api/restapi/handlers"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
+	"github.com/dycons/consents/consents-service/utilities/log"
 )
 
 //go:generate swagger generate server --target ../../swagger-tests --name ConsentsService --spec ../swagger.yaml
@@ -21,21 +23,24 @@ func configureFlags(api *operations.ConsentsServiceAPI) {
 }
 
 func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
+	// Initialize custom logger. Configuration to the logger can be made here through this (or a similar) function
+	log.Init()
+
+	// Connect to the database
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Write(nil, 0, err).Panic("Failed to connect to database")
+	}
+
 	// configure the api here
 	api.ServeError = errors.ServeError
-
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.GetOneDefaultConsentHandler = operations.GetOneDefaultConsentHandlerFunc(func(params operations.GetOneDefaultConsentParams) middleware.Responder {
-		return handlers.GetOneDefaultConsent(params)
+		return handlers.GetOneDefaultConsent(params, tx)
 	})
 	api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
 		return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
@@ -44,7 +49,7 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 		return middleware.NotImplemented("operation operations.InitializeProjectConsent has not yet been implemented")
 	})
 	api.PostParticipantHandler = operations.PostParticipantHandlerFunc(func(params operations.PostParticipantParams) middleware.Responder {
-		return handlers.PostParticipant(params)
+		return handlers.PostParticipant(params, tx)
 	})
 	api.PutProjectConsentHandler = operations.PutProjectConsentHandlerFunc(func(params operations.PutProjectConsentParams) middleware.Responder {
 		return middleware.NotImplemented("operation operations.PutProjectConsent has not yet been implemented")

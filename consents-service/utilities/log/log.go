@@ -26,8 +26,14 @@ func Write(HTTPRequest *http.Request, code int64, err error) *logrus.Entry {
 	entry := logrus.WithFields(logrus.Fields{
 		"service": "consents-service",
 		"version": "0.0.1",
+		"stage":   "HTTPRequest",
 		"host":    HTTPRequest.Host,
 		"ip":      HTTPRequest.RemoteAddr})
+
+	if HTTPRequest != nil {
+		entry = entry.WithField("host", HTTPRequest.Host)
+		entry = entry.WithField("ip", HTTPRequest.RemoteAddr)
+	}
 
 	if code != 0 {
 		entry = entry.WithField("code", strconv.Itoa(int(code)))
