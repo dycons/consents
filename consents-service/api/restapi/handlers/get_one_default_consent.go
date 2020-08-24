@@ -3,24 +3,20 @@ package handlers
 import (
 	"net/http" // TODO rm
 
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt" // TODO rm
+	"github.com/gobuffalo/pop"
+
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
-	"github.com/dycons/consents/consents-service/api/restapi/utilities"
 	datamodels "github.com/dycons/consents/consents-service/data/models" // TODO rm
 	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers" // TODO rm
 	"github.com/dycons/consents/consents-service/utilities/log"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt" // TODO rm
 )
 
 // GetOneDefaultConsent fetches the DefaultConsent for the requested defaultConsent.
-func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams) middleware.Responder {
-	tx, errPayload := utilities.ConnectDevelopment(params.HTTPRequest)
-	if errPayload != nil {
-		return operations.NewGetOneDefaultConsentInternalServerError().WithPayload(errPayload)
-	}
-
+func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams, tx *pop.Connection) middleware.Responder {
 	// Find the DefaultConsent associated with the uuid given in the request
 	dataDefaultConsent := datamodels.DefaultConsent{}
 	err := tx.Where("participant_id in (?)", params.StudyIdentifier.String()).First(&dataDefaultConsent)

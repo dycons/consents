@@ -1,10 +1,10 @@
 ### This is the main Dockerfile for the go-model-service app,
 ### excluding the database which is built seperately.
 # Build and run from project root with either:
-# (1)   docker-compose -f docker-compose.dev.yml up
+# (1)   docker-compose -f docker/docker-compose.dev.yml up
 # (2)   # Comment out ENTRYPOINT if running interactively (-it)
 #       docker build -t dyconsent/consents-app-dev --build-arg API_PATH=/go/src/github.com/dycons/consents/consents-service/api .
-#       docker run -it --rm dyconsent/consents-aapp-dev
+#       docker run -it --rm dyconsent/consents-app-dev
 
 # Modify this line if you want to use a different stack/dependencies-image
 FROM dyconsent/consents-deps AS consents-app-dev
