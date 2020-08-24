@@ -9,6 +9,7 @@ import (
 
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
+	"github.com/dycons/consents/consents-service/api/restapi/utilities"
 	datamodels "github.com/dycons/consents/consents-service/data/models" // TODO rm
 	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers" // TODO rm
@@ -18,8 +19,7 @@ import (
 // GetOneDefaultConsent fetches the DefaultConsent for the requested defaultConsent.
 func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams, tx *pop.Connection) middleware.Responder {
 	// Find the DefaultConsent associated with the uuid given in the request
-	dataDefaultConsent := datamodels.DefaultConsent{}
-	err := tx.Where("participant_id in (?)", params.StudyIdentifier.String()).First(&dataDefaultConsent)
+	dataDefaultConsent, err := utilities.GetDefaultConsentByStudyIdentifier(params.StudyIdentifier.String(), tx)
 	if err != nil {
 		message := "This DefaultConsent cannot be found."
 		var code int64 = 404001
@@ -29,7 +29,7 @@ func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams, tx *pop.
 		return operations.NewGetOneDefaultConsentNotFound().WithPayload(errPayload)
 	}
 
-	apiDefaultConsent, errPayload := defaultConsentDataToAPIModel(dataDefaultConsent, params.HTTPRequest)
+	apiDefaultConsent, errPayload := defaultConsentDataToAPIModel(*dataDefaultConsent, params.HTTPRequest)
 	if errPayload != nil {
 		return operations.NewGetOneDefaultConsentInternalServerError().WithPayload(errPayload)
 	}

@@ -23,12 +23,12 @@ func PostParticipant(params operations.PostParticipantParams, tx *pop.Connection
 	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
-	newParticipant := &datamodels.Participant{
+	newParticipant := datamodels.Participant{
 		DefaultConsent: *newDefaultConsent,
 	}
 
 	// Eager create Participant+DefaultConsent in DB. Only proceed if creation succeeds.
-	err := tx.Eager().Create(newParticipant)
+	err := tx.Eager().Create(&newParticipant)
 	if err != nil {
 		log.Write(params.HTTPRequest, 500000, err).Error("Creating into database failed")
 		errPayload := errors.DefaultInternalServerError()
@@ -36,7 +36,7 @@ func PostParticipant(params operations.PostParticipantParams, tx *pop.Connection
 	}
 
 	// Return Participant (with only the StudyIdentifier property populated) and Location URL header
-	createdParticipant, errPayload := participantDataToAPIModel(*newParticipant, params.HTTPRequest)
+	createdParticipant, errPayload := participantDataToAPIModel(newParticipant, params.HTTPRequest)
 	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}

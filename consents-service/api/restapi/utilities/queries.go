@@ -17,9 +17,12 @@ func addAND(conditions string) string {
 }
 
 // TODO remove, make generic in consents-service/api/generics/generic_resource_utilities.go
-// GetParticipantByID returns the Participant in the database corresponding to the given ID (or nil if no match is found)
-func GetParticipantByID(id string, tx *pop.Connection) (*datamodels.Participant, error) {
-	Participant := &datamodels.Participant{}
-	err := tx.Find(Participant, id)
-	return Participant, err
+// GetDefaultConsentByStudyIdentifier returns the DefaultConsent in the database corresponding to the given ID (or nil if no match is found)
+func GetDefaultConsentByStudyIdentifier(studyIdentifier string, tx *pop.Connection) (*datamodels.DefaultConsent, error) {
+	defaultConsent := &datamodels.DefaultConsent{}
+	err := tx.Where("participant_id in (?)", studyIdentifier).First(defaultConsent)
+	if err != nil {
+		return nil, err
+	}
+	return defaultConsent, nil
 }
