@@ -20,7 +20,7 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent) (*datam
 	case apimodels.DefaultConsentGeneticConsentStyleOO:
 		dataGeneticConsentStyle = datamodels.OptOut
 	default:
-		message := "Transformation of GeneticConsentStyle from api to data model fails to yield valid enum."
+		message := "Transformation of GeneticConsentStyle from api to data model fails to yield valid enum. Got: " + *apiDefaultConsent.GeneticConsentStyle
 		return nil, errors.New(message)
 	}
 
@@ -33,7 +33,7 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent) (*datam
 	case apimodels.DefaultConsentClinicalConsentStyleOO:
 		dataClinicalConsentStyle = datamodels.OptOut
 	default:
-		message := "Transformation of ClinicalConsentStyle from api to data model fails to yield valid enum."
+		message := "Transformation of ClinicalConsentStyle from api to data model fails to yield valid enum. Got: " + *apiDefaultConsent.ClinicalConsentStyle
 		return nil, errors.New(message)
 	}
 
@@ -53,7 +53,7 @@ func DefaultConsentDataToAPI(dataDefaultConsent datamodels.DefaultConsent) (*api
 	case datamodels.OptOut:
 		apiGeneticConsentStyle = apimodels.DefaultConsentGeneticConsentStyleOO
 	default:
-		message := "Transformation of GeneticConsentStyle from data to api model fails to yield valid enum."
+		message := "Transformation of GeneticConsentStyle from data to api model fails to yield valid enum. Got: " + string(dataDefaultConsent.GeneticConsentStyle)
 		return nil, errors.New(message)
 	}
 
@@ -66,7 +66,7 @@ func DefaultConsentDataToAPI(dataDefaultConsent datamodels.DefaultConsent) (*api
 	case datamodels.OptOut:
 		apiClinicalConsentStyle = apimodels.DefaultConsentClinicalConsentStyleOO
 	default:
-		message := "Transformation of ClinicalConsentStyle from data to api model fails to yield valid enum."
+		message := "Transformation of ClinicalConsentStyle from data to api model fails to yield valid enum. Got: " + string(dataDefaultConsent.ClinicalConsentStyle)
 		return nil, errors.New(message)
 	}
 

@@ -4,7 +4,7 @@ create_table("project_consents") {
 	t.Column("updated_at", "timestamp", {})
 	t.Column("participant_id", "uuid", {})
 	t.ForeignKey("participant_id", {"participants": ["id"]}, {"on_delete": "cascade"})
-	t.Column("project_application_id", "uuid", {})
+	t.Column("project_application_id", "integer", {})
 	t.Column("genetic_consent", "bool", {"default": false})
 	t.Column("clinical_consent", "bool", {"default": false})
 }

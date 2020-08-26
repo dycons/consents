@@ -2,13 +2,14 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	customValidators "github.com/dycons/consents/consents-service/utilities/validators"
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"time"
 )
 
 type ProjectConsent struct {
@@ -16,9 +17,9 @@ type ProjectConsent struct {
 	UpdatedAt            time.Time    `json:"updated_at" db:"updated_at"`
 	ParticipantID        uuid.UUID    `json:"participant_id" db:"participant_id"`
 	Participant          *Participant `json:"participant" belongs_to:"participant"`
-	ProjectApplicationID uuid.UUID    `json:"project_application_id" db:"project_application_id"`
-	GeneticConsent       nulls.Bool   `json:"genetic_consent" db:"genetic_consent"`
-	ClinicalConsent      nulls.Bool   `json:"clinical_consent" db:"clinical_consent"`
+	ProjectApplicationID int          `json:"project_application_id" db:"project_application_id"`
+	GeneticConsent       bool         `json:"genetic_consent" db:"genetic_consent"`
+	ClinicalConsent      bool         `json:"clinical_consent" db:"clinical_consent"`
 }
 
 // String is not required by pop and may be deleted
@@ -41,7 +42,7 @@ func (p ProjectConsents) String() string {
 func (p *ProjectConsent) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.UUIDIsPresent{Field: p.ParticipantID, Name: "ParticipantID"},
-		&validators.UUIDIsPresent{Field: p.ProjectApplicationID, Name: "ProjectApplicationID"},
+		&validators.IntIsGreaterThan{Field: p.ProjectApplicationID, Name: "ProjectApplicationID", Compared: -1},
 		&customValidators.IsNotNull{Field: nulls.Nulls{Value: p.GeneticConsent}, Name: "GeneticConsent"},
 		&customValidators.IsNotNull{Field: nulls.Nulls{Value: p.ClinicalConsent}, Name: "ClinicalConsent"},
 	), nil

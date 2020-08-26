@@ -58,50 +58,35 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /participants/{study_identifier}/project_consents:
+  /participants/{study_identifier}/initialize_project_consent:
     # TODO what if participant is a part of multiple datasets? Should we be keeping track of catalogue-item as well?
     post:
       operationId: initialize_project_consent
-      summary: Initialize application/project-specific consents for a participant
+      summary: Initialize project-specific consents for a participant
       parameters:
         - $ref: '#/parameters/study_identifier'
-        - name: application_id
-          description: REMS ID for the data access application associated with this project
+        - name: project_consent_initialization
           in: body
           schema:
-            type: string
-            format: uuid
-            x-example: 1
-          required: true
+            $ref: '#/definitions/ProjectConsentInitialization'
+            example:
+              project_application_id: 0
+              status: "Complete"
       responses:
         201:
           description: Project consent created
+          schema:
+            $ref: '#/definitions/ProjectConsentInitialization'
           headers:
             Location:
               type: string
               format: url
-    put:
-      operationId: put_project_consent
-      summary: Update participant's project-specific consent metadata
-      parameters:
-        - $ref: '#/parameters/study_identifier'
-        - name: project_consent
-          in: body
-          schema:
-            $ref: '#/definitions/ProjectConsent'
-            example:
-              application_id: bf3ba75b-8dfe-4619-b832-31c4a087a589
-              genetic_consent: false
-              clinical_consent: false
-      responses:
-        204:
-          description: Project consent updated
-        404:
-          description: Participant not found
+        403:
+          description: Forbidden to duplicate a project consent initialization
           schema:
             $ref: "#/definitions/Error"
-        405:
-          description: Forbidden to post project consent; see /project_consents/initialize endpoint instead.
+        404:
+          description: Participant not found
           schema:
             $ref: "#/definitions/Error"
         500:
@@ -127,6 +112,30 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /participants/{study_identifier}/project_consents/{project_application_id}:
+    put:
+      operationId: put_project_consent
+      summary: Update participant's project-specific consent metadata
+      parameters:
+        - $ref: '#/parameters/study_identifier'
+        - $ref: '#/parameters/project_application_id'
+      responses:
+        204:
+          description: Project consent updated
+        404:
+          description: Participant not found
+          schema:
+            $ref: "#/definitions/Error"
+        # Is this response data-minimizing? Maybe make 400 instead? 403?
+        405:
+          description: Forbidden to post project consent; see /project_consents/initialize endpoint instead.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error - project consent not updated
+          schema:
+            $ref: "#/definitions/Error"
+
 parameters:
   study_identifier:
     name: study_identifier
@@ -135,6 +144,15 @@ parameters:
     type: string
     format: uuid
     x-example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+    required: true
+  project_application_id:
+    name: project_application_id
+    description: REMS ID for the data access application associated with a project
+    in: path
+    type: integer
+    format: int32
+    minimum: 0
+    x-example: 0
     required: true
 
 definitions:
@@ -156,8 +174,6 @@ definitions:
         example: "Forbidden to modify existing default consent on post"
   Participant:
     type: object
-    required:
-      - study_identifier
     properties:
       study_identifier:
         type: string
@@ -183,13 +199,14 @@ definitions:
   ProjectConsent:
     type: object
     required:
-      - application_id
+      - project_application_id
     properties:
-      application_id:
-        type: string
-        format: uuid
-        description: Unique identifier that links this consent metadata to the secondary or tertiary data-using project that it pertains to
-        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+      project_application_id:
+        type: integer
+        format: int32
+        description: REMS identifier that links this consent metadata to the secondary or tertiary data-using project that it pertains to
+        minimum: 0
+        example: 0
       genetic_consent:
         type: boolean
         description: (T/F)- Participant has consented to having this project access their genetic data?
@@ -200,4 +217,26 @@ definitions:
         description: (T/F)- Participant has consented to having this project access their clinical data?
         example: false
         default: false
-  
+  ProjectConsentInitialization:
+    type: object
+    required:
+      - project_application_id
+    properties:
+      project_application_id:
+        type: integer
+        format: int32
+        description: REMS ID for the data access application associated with the project
+        minimum: 0
+        example: 0
+      study_identifier:
+        type: string
+        format: uuid
+        description: UUID for the participant whose consents are being initialized
+        example: bf3ba75b-8dfe-4619-b832-31c4a087a589
+        readOnly: true
+      status:
+        type: string
+        enum: [Processing, Complete]
+        description: Specifies default consent choices for genetic data. Options- Processing | Complete
+        example: "Processing"
+        default: "Processing"
