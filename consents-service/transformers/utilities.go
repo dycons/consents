@@ -2,15 +2,13 @@ package transformers
 
 import (
 	"errors"
+
 	"github.com/go-openapi/strfmt"
 	"github.com/gobuffalo/uuid"
 )
 
-// uuidAPIToData safely transforms a api-model UUID to a data-model UUID.
-// This never needs to be done for entity ID fields (primary keys), such as Resource.ID,
-// as the primary keys are generated automatically be the ORM.
-// On the other hand, foreign keys can be transformed with this function.
-func uuidAPIToData(apiUUID strfmt.UUID, fieldName string) (*uuid.UUID, error) {
+// UUIDAPIToData safely transforms an api-model UUID to a data-model UUID.
+func UUIDAPIToData(apiUUID strfmt.UUID, fieldName string) (*uuid.UUID, error) {
 	dataUUID, err := uuid.FromString(apiUUID.String())
 	if err != nil {
 		message := "Transformation of " + fieldName + " from api to data model fails to yield valid UUID with the following errors:\n"
@@ -18,6 +16,17 @@ func uuidAPIToData(apiUUID strfmt.UUID, fieldName string) (*uuid.UUID, error) {
 	}
 
 	return &dataUUID, nil
+}
+
+// UUIDDataToAPI safely transforms a data-model UUID to an api-model UUID.
+func UUIDDataToAPI(dataUUID uuid.UUID, fieldName string) (*strfmt.UUID, error) {
+	if !strfmt.IsUUID(dataUUID.String()) {
+		message := "Transformation of " + fieldName + " from data to api model fails to yield valid UUID."
+		return nil, errors.New(message)
+	}
+
+	apiUUID := strfmt.UUID(dataUUID.String())
+	return &apiUUID, nil
 }
 
 // stringValueOrZero converts a pointer to a string to its constituent string, but handles nil pointers

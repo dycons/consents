@@ -14,6 +14,10 @@ Attempted a forbidden "GET all"-type request.
 
 GET requests for this resource are permitted only with some query parameters provided in the query string.
 
+##### 403002
+
+Attempted to post a forbidden duplicate of an existing resource.
+
 ##### 404001
 
 Requested record cannot be found. The given record ID does not correspond with any existing data for this resource.
@@ -21,13 +25,6 @@ Requested record cannot be found. The given record ID does not correspond with a
 ##### 404002
 
 The resource by which you are attempting to query for other data cannot be found. The given record ID does not correspond with any existing data for this resource.
-
-##### 405001
-
-Attempted to modify an existing record with POST (record creation), which should only be done with PUT (record modification).
-
-When posting a new record, be sure not to provide a record ID in the POST request. The ID is generated internally and is read-only.
-
 
 ## 500--- Codes
 
