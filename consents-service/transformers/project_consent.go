@@ -7,12 +7,10 @@ import (
 
 // ProjectConsentDataToAPI contains the model-building step of the data-model-to-api-model transformer.
 func ProjectConsentDataToAPI(dataProjectConsent datamodels.ProjectConsent) (*apimodels.ProjectConsent, error) {
-	applicationID := int32(dataProjectConsent.ProjectApplicationID)
-	geneticConsent := dataProjectConsent.GeneticConsent
-	clinicalConsent := dataProjectConsent.ClinicalConsent
+	projectApplicationID := int32(dataProjectConsent.ProjectApplicationID)
 
 	return &apimodels.ProjectConsent{
-		ApplicationID:   &applicationID,
-		GeneticConsent:  &geneticConsent,
-		ClinicalConsent: &clinicalConsent}, nil
+		ProjectApplicationID: &projectApplicationID,
+		GeneticConsent:       &dataProjectConsent.GeneticConsent,
+		ClinicalConsent:      &dataProjectConsent.ClinicalConsent}, nil
 }
