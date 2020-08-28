@@ -43,7 +43,7 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 		return handlers.GetOneDefaultConsent(params, tx)
 	})
 	api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
-		return middleware.NotImplemented("operation operations.GetProjectConsentsByParticipant has not yet been implemented")
+		return handlers.GetProjectConsentsByParticipant(params, tx)
 	})
 	api.InitializeProjectConsentHandler = operations.InitializeProjectConsentHandlerFunc(func(params operations.InitializeProjectConsentParams) middleware.Responder {
 		return handlers.InitializeProjectConsent(params, tx)

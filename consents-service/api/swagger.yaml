@@ -93,6 +93,8 @@ paths:
           description: Internal error - project consent not created
           schema:
             $ref: "#/definitions/Error"
+  
+  /participants/{study_identifier}/project_consents:
     get:
       operationId: get_project_consents_by_participant
       summary: Get all project consents for a particular participant
@@ -102,7 +104,9 @@ paths:
         200:
           description: Return all affiliated project consents
           schema:
-            $ref: '#/definitions/ProjectConsent'
+            type: array
+            items:
+              $ref: '#/definitions/ProjectConsent'
         404:
           description: Participant not found
           schema:

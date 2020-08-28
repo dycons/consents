@@ -4,11 +4,10 @@ import (
 	// TODO rm
 
 	"fmt"
-	"net/http"
 
 	"github.com/go-openapi/runtime/middleware" // TODO rm
-	"github.com/go-openapi/strfmt"             // TODO rm
-	"github.com/gobuffalo/pop"                 // TODO rm
+	// TODO rm
+	"github.com/gobuffalo/pop" // TODO rm
 
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
@@ -51,9 +50,9 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	}
 
 	// Find the DefaultConsent associated with the uuid given in the request
-	defaultConsent, err := utilities.GetDefaultConsentByStudyIdentifier(participantID.String(), tx)
+	defaultConsent, err := utilities.GetDefaultConsentByParticipantID(participantID.String(), tx)
 	if err != nil {
-		message := "Study identifier not found."
+		message := "This default consent cannot be found"
 		var code int64 = 404001
 
 		log.Write(params.HTTPRequest, code, err).Warn(message)
@@ -116,27 +115,4 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	}
 	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() + string(projectConsent.ProjectApplicationID)
 	return operations.NewInitializeProjectConsentCreated().WithPayload(&initialization).WithLocation(location)
-}
-
-// projectConsentDataToAPIModel transforms a data.models representation of the Participant from the pop ORM-like
-// to an api.models representation of the Participant from the Go-Swagger-defined API.
-// This allows for the movement of Participant data from the database to the server for GET requests.
-// An *apimodels.Error pointer is returned alongside the transformed Participant for ease of error
-// response, as it can be used as the response payload immediately.
-func projectConsentDataToAPIModel(dataProjectConsent datamodels.ProjectConsent, HTTPRequest *http.Request) (*apimodels.ProjectConsent, *apimodels.Error) {
-	apiProjectConsent, err := transformers.ProjectConsentDataToAPI(dataProjectConsent)
-	if err != nil {
-		log.Write(HTTPRequest, 500000, err).Error("Failed transformation of ProjectConsent from data to api model")
-		errPayload := errors.DefaultInternalServerError()
-		return nil, errPayload
-	}
-
-	err = apiProjectConsent.Validate(strfmt.NewFormats())
-	if err != nil {
-		log.Write(HTTPRequest, 500000, err).Error("API schema validation for API-model ProjectConsent failed upon transformation")
-		errPayload := errors.DefaultInternalServerError()
-		return nil, errPayload
-	}
-
-	return apiProjectConsent, nil
 }
