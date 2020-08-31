@@ -50,7 +50,7 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	}
 
 	// Find the DefaultConsent associated with the uuid given in the request
-	defaultConsent, err := utilities.GetDefaultConsentByParticipantID(participantID.String(), tx)
+	defaultConsent, err := utilities.FindOneDefaultConsent(participantID.String(), tx)
 	if err != nil {
 		message := "This DefaultConsent cannot be found"
 		var code int64 = 404001

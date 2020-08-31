@@ -25,7 +25,7 @@ func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams, tx *pop.
 	}
 
 	// Find the DefaultConsent associated with the uuid given in the request
-	dataDefaultConsent, err := utilities.GetDefaultConsentByParticipantID(participantID.String(), tx)
+	dataDefaultConsent, err := utilities.FindOneDefaultConsent(participantID.String(), tx)
 	if err != nil {
 		message := "This DefaultConsent cannot be found."
 		var code int64 = 404001
