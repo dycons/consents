@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	"fmt"
-
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	"github.com/dycons/consents/consents-service/api/restapi/operations"
-	datamodels "github.com/dycons/consents/consents-service/data/models"
+	"github.com/dycons/consents/consents-service/api/restapi/utilities"
 	"github.com/dycons/consents/consents-service/errors"
 	"github.com/dycons/consents/consents-service/transformers"
 	"github.com/dycons/consents/consents-service/utilities/log"
@@ -26,10 +24,7 @@ func PutProjectConsent(params operations.PutProjectConsentParams, tx *pop.Connec
 	}
 
 	// Fetch the ProjectConsent for this combination of project application and participant
-	dataProjectConsent := datamodels.ProjectConsent{}
-	query := fmt.Sprintf("participant_id = '%s' AND project_application_id = '%d'",
-		participantID, *params.ProjectConsent.ProjectApplicationID)
-	err = tx.Where(query).First(&dataProjectConsent)
+	dataProjectConsent, err := utilities.FindOneProjectConsent(participantID.String(), *params.ProjectConsent.ProjectApplicationID, tx)
 	if err != nil {
 		// This ProjectConsent does not exist in the db; return a 404 Not Found response
 		if err.Error() == "sql: no rows in result set" {
@@ -54,7 +49,7 @@ func PutProjectConsent(params operations.PutProjectConsentParams, tx *pop.Connec
 	// TODO Make sure that all of my other Create() calls are being preceded by calls to Validate(), or to ValidateAndCreate()
 
 	// Write the ProjectConsent into the DB. Only procees if write succeeds.
-	validationErrors, err := tx.ValidateAndUpdate(&dataProjectConsent)
+	validationErrors, err := tx.ValidateAndUpdate(dataProjectConsent)
 	if validationErrors.Error() != "" { // if at least one validation error occured
 		log.Write(params.HTTPRequest, 500000, err).Error("Data schema validation for the ProjectConsent failed with the following validation errors: " +
 			validationErrors.Error())
@@ -68,7 +63,7 @@ func PutProjectConsent(params operations.PutProjectConsentParams, tx *pop.Connec
 	}
 
 	// Return the updated ProjectConsent
-	updatedProjectConsent, errPayload := projectConsentDataToAPIModel(dataProjectConsent, params.HTTPRequest)
+	updatedProjectConsent, errPayload := projectConsentDataToAPIModel(*dataProjectConsent, params.HTTPRequest)
 	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
