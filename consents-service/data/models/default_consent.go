@@ -2,12 +2,13 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	customValidators "github.com/dycons/consents/consents-service/utilities/validators"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"time"
 )
 
 // DefaultConsent : 	The ORM-side representation of the ConsentStyle data object.
@@ -64,16 +65,4 @@ func (d *DefaultConsent) Validate(tx *pop.Connection) (*validate.Errors, error) 
 		&customValidators.EnumIsInRange{Field: d.GeneticConsentStyle, Name: "GeneticConsentStyle", Start: start, End: end},
 		&customValidators.EnumIsInRange{Field: d.ClinicalConsentStyle, Name: "ClinicalConsentStyle", Start: start, End: end},
 	), nil
-}
-
-// ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
-// This method is not required and may be deleted.
-func (d *DefaultConsent) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
-}
-
-// ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
-// This method is not required and may be deleted.
-func (d *DefaultConsent) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
 }

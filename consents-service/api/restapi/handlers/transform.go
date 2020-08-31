@@ -10,6 +10,7 @@ import (
 	"github.com/dycons/consents/consents-service/utilities/log"
 	"github.com/go-openapi/strfmt"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/uuid"
 )
 
 // participantDataToAPIModel transforms a data.models representation of the Participant from the pop ORM-like
@@ -42,8 +43,8 @@ func participantDataToAPIModel(dataParticipant datamodels.Participant, HTTPReque
 // The transformed DefaultConsent is validated within this function prior to its return.
 // An *apimodels.Error pointer is returned alongside the transformed DefaultConsent for ease of error
 // response, as it can be used as the response payload immediately.
-func defaultConsentAPIToDataModel(apiDefaultConsent apimodels.DefaultConsent, HTTPRequest *http.Request, tx *pop.Connection) (*datamodels.DefaultConsent, *apimodels.Error) {
-	dataDefaultConsent, err := transformers.DefaultConsentAPIToData(apiDefaultConsent)
+func defaultConsentAPIToDataModel(apiDefaultConsent apimodels.DefaultConsent, participantID uuid.UUID, HTTPRequest *http.Request, tx *pop.Connection) (*datamodels.DefaultConsent, *apimodels.Error) {
+	dataDefaultConsent, err := transformers.DefaultConsentAPIToData(apiDefaultConsent, participantID)
 	if err != nil {
 		log.Write(HTTPRequest, 500000, err).Error("Failed transformation of DefaultConsent from api to data model")
 		errPayload := errors.DefaultInternalServerError()
@@ -51,9 +52,14 @@ func defaultConsentAPIToDataModel(apiDefaultConsent apimodels.DefaultConsent, HT
 	}
 
 	validationErrors, err := dataDefaultConsent.Validate(tx)
-	if err != nil {
-		log.Write(HTTPRequest, 500000, err).Error("Data schema validation for data-model DefaultConsent failed upon transformation with the following validation errors:\n" +
+	if validationErrors.Error() != "" { // if at least one validation error occured
+		log.Write(HTTPRequest, 500000, err).Error("Data schema validation for data-model DefaultConsent failed upon transformation with the following validation errors: " +
 			validationErrors.Error())
+		errPayload := errors.DefaultInternalServerError()
+		return nil, errPayload
+	}
+	if err != nil {
+		log.Write(HTTPRequest, 500000, err).Error("Data schema validation for data-model DefaultConsent failed without validation errors.")
 		errPayload := errors.DefaultInternalServerError()
 		return nil, errPayload
 	}

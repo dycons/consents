@@ -15,19 +15,31 @@ import (
 // PostParticipant processes a Participant+DefaultConsent resource posted by the API request and creates it into the database.
 // It then returns the URL location of this Participant, along with its uuid (the {study_identifier} parameter in the API).
 func PostParticipant(params operations.PostParticipantParams, tx *pop.Connection) middleware.Responder {
+	// Create Participant in DB
+	newParticipant := datamodels.Participant{}
+	validationErrors, err := tx.ValidateAndCreate(&newParticipant)
+	if validationErrors.Error() != "" { // if at least one validation error occured
+		log.Write(params.HTTPRequest, 500000, err).Error("Data schema validation for the Participant failed with the following validation errors: " +
+			validationErrors.Error())
+		errPayload := errors.DefaultInternalServerError()
+		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+	}
+	if err != nil {
+		log.Write(params.HTTPRequest, 500000, err).Error("Creation of the Participant into the database failed without validation errors.")
+		errPayload := errors.DefaultInternalServerError()
+		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
+	}
+
 	// Transform DefaultConsent model API -> data
-	newDefaultConsent, errPayload := defaultConsentAPIToDataModel(*params.DefaultConsent, params.HTTPRequest, tx)
+	newDefaultConsent, errPayload := defaultConsentAPIToDataModel(*params.DefaultConsent, newParticipant.ID, params.HTTPRequest, tx)
 	if errPayload != nil {
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
-	newParticipant := datamodels.Participant{
-		DefaultConsent: *newDefaultConsent,
-	}
 
-	// Eager create Participant+DefaultConsent in DB. Only proceed if creation succeeds.
-	err := tx.Eager().Create(&newParticipant)
+	// Create the Participant-linked DefaultConsent in DB. Only proceed if creation succeeds.
+	err = tx.Create(newDefaultConsent)
 	if err != nil {
-		log.Write(params.HTTPRequest, 500000, err).Error("Creating into database failed")
+		log.Write(params.HTTPRequest, 500000, err).Error("Failed to create the DefaultConsent into the database.")
 		errPayload := errors.DefaultInternalServerError()
 		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}

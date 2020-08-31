@@ -100,6 +100,13 @@ paths:
       summary: Get all project consents for a particular participant
       parameters:
       - $ref: '#/parameters/study_identifier'
+      - name: project_application_id
+        description: REMS application id associated with the desired ProjectConsent
+        in: query
+        type: integer
+        format: int32
+        minimum: 0
+        x-example: 0
       responses: 
         200:
           description: Return all affiliated project consents
@@ -115,24 +122,26 @@ paths:
           description: Internal error
           schema:
             $ref: "#/definitions/Error"
-
-  /participants/{study_identifier}/project_consents/{project_application_id}:
     put:
       operationId: put_project_consent
       summary: Update participant's project-specific consent metadata
       parameters:
         - $ref: '#/parameters/study_identifier'
-        - $ref: '#/parameters/project_application_id'
-      responses:
-        204:
-          description: Project consent updated
-        404:
-          description: Participant not found
+        - name: project_consent
+          in: body
           schema:
-            $ref: "#/definitions/Error"
-        # Is this response data-minimizing? Maybe make 400 instead? 403?
-        405:
-          description: Forbidden to post project consent; see /project_consents/initialize endpoint instead.
+            $ref: '#/definitions/ProjectConsent'
+            example:
+              project_application_id: 0
+              genetic_consent: false
+              clinical_consent: false
+      responses:
+        200:
+          description: Return the updated project consent
+          schema:
+            $ref: '#/definitions/ProjectConsent'
+        404:
+          description: Project consent not found. To create a new project consent, see the /participants/{study_identifier}/initialize_project_consent endpoint
           schema:
             $ref: "#/definitions/Error"
         500:
@@ -148,15 +157,6 @@ parameters:
     type: string
     format: uuid
     x-example: bf3ba75b-8dfe-4619-b832-31c4a087a589
-    required: true
-  project_application_id:
-    name: project_application_id
-    description: REMS ID for the data access application associated with a project
-    in: path
-    type: integer
-    format: int32
-    minimum: 0
-    x-example: 0
     required: true
 
 definitions:

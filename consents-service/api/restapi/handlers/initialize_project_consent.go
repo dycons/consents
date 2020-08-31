@@ -52,7 +52,7 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	// Find the DefaultConsent associated with the uuid given in the request
 	defaultConsent, err := utilities.GetDefaultConsentByParticipantID(participantID.String(), tx)
 	if err != nil {
-		message := "This default consent cannot be found"
+		message := "This DefaultConsent cannot be found"
 		var code int64 = 404001
 
 		log.Write(params.HTTPRequest, code, err).Warn(message)
@@ -99,9 +99,15 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 		GeneticConsent:       geneticConsent,
 		ClinicalConsent:      clinicalConsent,
 	}
-	err = tx.Create(&projectConsent)
+	validationErrors, err := tx.ValidateAndCreate(&projectConsent)
+	if validationErrors.Error() != "" { // if at least one validation error occured
+		log.Write(params.HTTPRequest, 500000, err).Error("Data schema validation for the ProjectConsent failed with the following validation errors: " +
+			validationErrors.Error())
+		errPayload := errors.DefaultInternalServerError()
+		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+	}
 	if err != nil {
-		log.Write(params.HTTPRequest, 500000, err).Error("Creating into database failed")
+		log.Write(params.HTTPRequest, 500000, err).Error("Creation of the ProjectConsent into the database failed without validation errors.")
 		errPayload := errors.DefaultInternalServerError()
 		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
 	}
@@ -113,6 +119,6 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 		StudyIdentifier:      params.StudyIdentifier,
 		Status:               &status,
 	}
-	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() + string(projectConsent.ProjectApplicationID)
+	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() + "?project_application_id=" + string(projectConsent.ProjectApplicationID)
 	return operations.NewInitializeProjectConsentCreated().WithPayload(&initialization).WithLocation(location)
 }
