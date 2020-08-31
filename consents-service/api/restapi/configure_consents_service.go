@@ -52,7 +52,7 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 		return handlers.PostParticipant(params, tx)
 	})
 	api.PutProjectConsentHandler = operations.PutProjectConsentHandlerFunc(func(params operations.PutProjectConsentParams) middleware.Responder {
-		return middleware.NotImplemented("operation operations.PutProjectConsent has not yet been implemented")
+		return handlers.PutProjectConsent(params, tx)
 	})
 
 	api.PreServerShutdown = func() {}

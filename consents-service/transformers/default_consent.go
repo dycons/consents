@@ -5,12 +5,13 @@ import (
 
 	apimodels "github.com/dycons/consents/consents-service/api/models"
 	datamodels "github.com/dycons/consents/consents-service/data/models"
+	"github.com/gobuffalo/uuid"
 )
 
 // DefaultConsentAPIToData contains the model-building step of the api-model-to-data-model transformer.
 // Since there is no Participant property contained in the DefaultConsent API model, the ParticipantID and
 // Participant fields of the data model are not populated in this method, and must be handled seperately.
-func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent) (*datamodels.DefaultConsent, error) {
+func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent, participantID uuid.UUID) (*datamodels.DefaultConsent, error) {
 	var dataGeneticConsentStyle int
 	switch *apiDefaultConsent.GeneticConsentStyle {
 	case apimodels.DefaultConsentGeneticConsentStyleSUF:
@@ -38,6 +39,7 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent) (*datam
 	}
 
 	return &datamodels.DefaultConsent{
+		ParticipantID:        participantID,
 		GeneticConsentStyle:  dataGeneticConsentStyle,
 		ClinicalConsentStyle: dataClinicalConsentStyle}, nil
 }

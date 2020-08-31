@@ -24,7 +24,7 @@ RUN go mod download
 # This will generate a server named consents-service. The name is important for
 # maintaining compatibility with the configure_consents_service.go middleware
 # configuration file.
-RUN cd "$API_PATH" && pwd && swagger generate server -A consents-service swagger.yaml
+RUN cd "$API_PATH" && swagger generate server -A consents-service swagger.yaml
 
 # Run a script to generate resource-specific request handlers for middleware,
 # from the generic handlers defined in the consents-service/api/generics package,
