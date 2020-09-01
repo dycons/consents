@@ -93,7 +93,7 @@ paths:
           description: Internal error - project consent not created
           schema:
             $ref: "#/definitions/Error"
-  
+
   /participants/{study_identifier}/project_consents:
     get:
       operationId: get_project_consents_by_participant
@@ -193,17 +193,20 @@ definitions:
         enum: [OO, OI, SUF]
         description: Specifies default consent choices for genetic data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
         example: "SUF"
-        default: "SUF"
       clinical_consent_style:
         type: string
         enum: [OO, OI, SUF]
         description: Specifies default consent choices for clinical data. Options- OO (Opt-In) | OI (Opt-Out) | SUF (Secondary Use Forbidden)
         example: "SUF"
-        default: "SUF"
+    default:
+      genetic_consent_style: "SUF"
+      clinical_consent_style: "SUF"
   ProjectConsent:
     type: object
     required:
       - project_application_id
+      - genetic_consent
+      - clinical_consent
     properties:
       project_application_id:
         type: integer
@@ -215,12 +218,10 @@ definitions:
         type: boolean
         description: (T/F)- Participant has consented to having this project access their genetic data?
         example: false
-        default: false
       clinical_consent:
         type: boolean
         description: (T/F)- Participant has consented to having this project access their clinical data?
         example: false
-        default: false
   ProjectConsentInitialization:
     type: object
     required:
@@ -240,8 +241,7 @@ definitions:
         readOnly: true
       status:
         type: string
-        enum: [Processing, Complete]
-        description: Specifies default consent choices for genetic data. Options- Processing | Complete
+        enum: [Complete]
+        description: Specifies default consent choices for genetic data. Options- Complete
+        example: "Complete"
         readOnly: true
-        example: "Processing"
-        default: "Processing"
