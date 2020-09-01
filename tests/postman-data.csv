@@ -1,0 +1,4 @@
+project_application_id,genetic_consent_style,clinical_consent_style,genetic_consent,clinical_consent
+1,"SUF","SUF",true,false
+2,"OI","OI",false,true
+3,"OO","OO",false,true
