@@ -1,0 +1,32 @@
+language: node_js
+
+node_js:
+  - node
+
+cache:
+  directories:
+    - ~/build/dycons/consents/node_modules
+
+addons:
+  apt:
+    packages:
+    - docker-ce
+
+services:
+ - docker
+
+before_install:
+ - npm root
+ - docker --version
+ - cp default.env .env
+
+install:
+ - docker-compose -f docker/docker-compose.test.yml up --detach
+ - ./docker/migrate.sh -t
+
+before_script:
+ - npm install newman
+ - ~/build/dycons/consents/node_modules/.bin/newman --version
+
+script:
+ - ~/build/dycons/consents/node_modules/.bin/newman run ./tests/consents-service.postman_collection.json -d tests/postman-data.csv

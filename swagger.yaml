@@ -242,5 +242,6 @@ definitions:
         type: string
         enum: [Processing, Complete]
         description: Specifies default consent choices for genetic data. Options- Processing | Complete
+        readOnly: true
         example: "Processing"
         default: "Processing"

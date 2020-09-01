@@ -4,6 +4,7 @@ import (
 	// TODO rm
 
 	"fmt"
+	"strconv"
 
 	"github.com/go-openapi/runtime/middleware" // TODO rm
 	// TODO rm
@@ -117,8 +118,9 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	initialization := apimodels.ProjectConsentInitialization{
 		ProjectApplicationID: params.ProjectConsentInitialization.ProjectApplicationID,
 		StudyIdentifier:      params.StudyIdentifier,
-		Status:               &status,
+		Status:               status,
 	}
-	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() + "?project_application_id=" + string(projectConsent.ProjectApplicationID)
+	location := params.HTTPRequest.URL.Host + params.HTTPRequest.URL.EscapedPath() + "?project_application_id=" + strconv.Itoa(projectConsent.ProjectApplicationID)
+	log.Write(params.HTTPRequest, 0, err).Warn("Location header payload is: " + location)
 	return operations.NewInitializeProjectConsentCreated().WithPayload(&initialization).WithLocation(location)
 }
