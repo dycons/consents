@@ -13,7 +13,7 @@ import (
 // Participant fields of the data model are not populated in this method, and must be handled seperately.
 func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent, participantID uuid.UUID) (*datamodels.DefaultConsent, error) {
 	var dataGeneticConsentStyle int
-	switch *apiDefaultConsent.GeneticConsentStyle {
+	switch apiDefaultConsent.GeneticConsentStyle {
 	case apimodels.DefaultConsentGeneticConsentStyleSUF:
 		dataGeneticConsentStyle = datamodels.SecondaryUseForbidden
 	case apimodels.DefaultConsentGeneticConsentStyleOI:
@@ -21,12 +21,12 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent, partici
 	case apimodels.DefaultConsentGeneticConsentStyleOO:
 		dataGeneticConsentStyle = datamodels.OptOut
 	default:
-		message := "Transformation of GeneticConsentStyle from api to data model fails to yield valid enum. Got: " + *apiDefaultConsent.GeneticConsentStyle
+		message := "Transformation of GeneticConsentStyle from api to data model fails to yield valid enum. Got: " + apiDefaultConsent.GeneticConsentStyle
 		return nil, errors.New(message)
 	}
 
 	var dataClinicalConsentStyle int
-	switch *apiDefaultConsent.ClinicalConsentStyle {
+	switch apiDefaultConsent.ClinicalConsentStyle {
 	case apimodels.DefaultConsentClinicalConsentStyleSUF:
 		dataClinicalConsentStyle = datamodels.SecondaryUseForbidden
 	case apimodels.DefaultConsentClinicalConsentStyleOI:
@@ -34,7 +34,7 @@ func DefaultConsentAPIToData(apiDefaultConsent apimodels.DefaultConsent, partici
 	case apimodels.DefaultConsentClinicalConsentStyleOO:
 		dataClinicalConsentStyle = datamodels.OptOut
 	default:
-		message := "Transformation of ClinicalConsentStyle from api to data model fails to yield valid enum. Got: " + *apiDefaultConsent.ClinicalConsentStyle
+		message := "Transformation of ClinicalConsentStyle from api to data model fails to yield valid enum. Got: " + apiDefaultConsent.ClinicalConsentStyle
 		return nil, errors.New(message)
 	}
 
@@ -73,6 +73,6 @@ func DefaultConsentDataToAPI(dataDefaultConsent datamodels.DefaultConsent) (*api
 	}
 
 	return &apimodels.DefaultConsent{
-		GeneticConsentStyle:  &apiGeneticConsentStyle,
-		ClinicalConsentStyle: &apiClinicalConsentStyle}, nil
+		GeneticConsentStyle:  apiGeneticConsentStyle,
+		ClinicalConsentStyle: apiClinicalConsentStyle}, nil
 }
