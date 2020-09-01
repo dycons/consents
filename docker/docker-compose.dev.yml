@@ -25,6 +25,7 @@ services:
       - ../.env
     environment:
       - APP_PATH=${PROJECT_ROOT}/consents-service
+      - SWAGGERFILE=${PROJECT_ROOT}/swagger.yaml
     depends_on:
       - consents-database
     ports:

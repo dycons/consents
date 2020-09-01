@@ -9,7 +9,8 @@
 # Modify this line if you want to use a different stack/dependencies-image
 FROM dyconsent/consents-deps AS consents-app-dev
 
-ARG API_PATH
+ARG API_PATH=/go/src/github.com/dycons/consents/consents-service/api
+ARG SWAGGERFILE=/go/src/github.com/dycons/consents/swagger.yaml
 
 WORKDIR /go/src/github.com/dycons/consents
 COPY . .
@@ -23,7 +24,7 @@ RUN go mod download
 # This will generate a server named consents-service. The name is important for
 # maintaining compatibility with the configure_consents_service.go middleware
 # configuration file.
-RUN cd "$API_PATH" && swagger generate server -A consents-service swagger.yaml
+RUN cd "$API_PATH" && swagger generate server -f "$SWAGGERFILE" -A consents-service
 
 # Run a script to generate resource-specific request handlers for middleware,
 # from the generic handlers defined in the consents-service/api/generics package,
