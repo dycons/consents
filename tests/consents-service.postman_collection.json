@@ -10,424 +10,107 @@
 			"name": "POST Participant + DefaultConsent",
 			"item": [
 				{
-					"name": "Add a participant and their default consent",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "afa0ad2a-d0b9-43f0-a81d-c43cff9d6102",
-								"exec": [
-									"// Test that request succeeded",
-									"pm.test(\"Successful POST request\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"// Test that Location header is present",
-									"pm.test(\"Location header is present\", () => {",
-									"    pm.response.to.have.header(\"Location\");",
-									"});",
-									"",
-									"const responseData = pm.response.json();",
-									"",
-									"// Test that response schema is valid ",
-									"const schema = {",
-									"    \"study_identifier\": {\"type\": \"string\"}",
-									"};",
-									"pm.test('Response schema is valid', function() {",
-									"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-									"});",
-									"",
-									"// Set the study_identfier param for subsequent requests",
-									"pm.collectionVariables.set(\"study_identifier\", responseData.study_identifier);",
-									"",
-									"// Set the expected consents for subsequent requests",
-									"const requestData = JSON.parse(request.data);",
-									"switch(requestData.genetic_consent_style) {",
-									"  case \"OO\":",
-									"    pm.collectionVariables.set(\"expected_genetic_consent\", true);",
-									"    break;",
-									"  default:",
-									"    pm.collectionVariables.set(\"expected_genetic_consent\", false);",
-									"}",
-									"switch(requestData.clinical_consent_style) {",
-									"  case \"OO\":",
-									"    pm.collectionVariables.set(\"expected_clinical_consent\", true);",
-									"    break;",
-									"  default:",
-									"    pm.collectionVariables.set(\"expected_clinical_consent\", false);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"genetic_consent_style\": \"{{genetic_consent_style}}\",\n    \"clinical_consent_style\": \"{{clinical_consent_style}}\"\n}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{scheme}}{{host}}{{base_path}}/participants",
-							"host": [
-								"{{scheme}}{{host}}{{base_path}}"
-							],
-							"path": [
-								"participants"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Forbidden to overwrite participant in post",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Method Not Allowed",
-							"code": 405,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-						},
-						{
-							"name": "Internal error - default consent not created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Internal Server Error",
-							"code": 500,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-						},
-						{
-							"name": "New default consent created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Location",
-									"value": "<url>",
-									"description": ""
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"study_identifier\": \"<uuid>\",\n \"default_consent\": {\n  \"genetic_consent_style\": \"SUF\",\n  \"clinical_consent_style\": \"SUF\"\n }\n}"
-						}
-					]
-				},
-				{
-					"name": "Add a participant with null consent",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "a075a9ea-94f5-4e29-ac1d-b3a6b130a021",
-								"exec": [
-									"// Test that request succeeded",
-									"pm.test(\"Successful POST request\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"// Test that Location header is present",
-									"pm.test(\"Location header is present\", () => {",
-									"    pm.response.to.have.header(\"Location\");",
-									"});",
-									"",
-									"const responseData = pm.response.json();",
-									"",
-									"// Test that response schema is valid ",
-									"const schema = {",
-									"    \"study_identifier\": {\"type\": \"string\"}",
-									"};",
-									"pm.test('Response schema is valid', function() {",
-									"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{}",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{scheme}}{{host}}{{base_path}}/participants",
-							"host": [
-								"{{scheme}}{{host}}{{base_path}}"
-							],
-							"path": [
-								"participants"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "New default consent created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Location",
-									"value": "<url>",
-									"description": ""
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"study_identifier\": \"<uuid>\",\n \"default_consent\": {\n  \"genetic_consent_style\": \"SUF\",\n  \"clinical_consent_style\": \"SUF\"\n }\n}"
-						},
-						{
-							"name": "Forbidden to overwrite participant in post",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Method Not Allowed",
-							"code": 405,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-						},
-						{
-							"name": "Internal error - default consent not created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/participants",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"participants"
-									]
-								}
-							},
-							"status": "Internal Server Error",
-							"code": 500,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-						}
-					]
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "by {study identifier}",
-			"item": [
-				{
-					"name": "GET DefaultConsent",
+					"name": "success (2xx)",
 					"item": [
 						{
-							"name": "Get participant's default consent",
+							"name": "Add a participant and their default consent",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "7be5b4d6-6134-4879-ba02-26b54e73ff82",
+										"id": "afa0ad2a-d0b9-43f0-a81d-c43cff9d6102",
 										"exec": [
 											"// Test that request succeeded",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"// Test that Location header is present",
+											"pm.test(\"Location header is present\", () => {",
+											"    pm.response.to.have.header(\"Location\");",
 											"});",
 											"",
 											"const responseData = pm.response.json();",
 											"",
 											"// Test that response schema is valid ",
 											"const schema = {",
-											"    \"genetic_consent_style:\": {\"type\": \"string\"},",
-											"    \"clinical_consent_style:\": {\"type\": \"string\"}",
+											"    \"study_identifier\": {\"type\": \"string\"}",
 											"};",
 											"pm.test('Response schema is valid', function() {",
 											"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
 											"});",
 											"",
-											"// Test that response values equal the expected values",
-											"pm.test(\"Response values satisfy expectations\", () => {",
-											"    pm.expect(responseData.genetic_consent_style).to.eql(pm.iterationData.get(\"genetic_consent_style\"));",
-											"    pm.expect(responseData.clinical_consent_style).to.eql(pm.iterationData.get(\"clinical_consent_style\"));",
-											"});"
+											"// Set the study_identfier param for subsequent requests",
+											"pm.collectionVariables.set(\"study_identifier\", responseData.study_identifier);",
+											"",
+											"// Set the expected consents for subsequent requests",
+											"const requestData = JSON.parse(request.data);",
+											"switch(requestData.genetic_consent_style) {",
+											"  case \"OO\":",
+											"    pm.collectionVariables.set(\"expected_genetic_consent\", true);",
+											"    break;",
+											"  default:",
+											"    pm.collectionVariables.set(\"expected_genetic_consent\", false);",
+											"}",
+											"switch(requestData.clinical_consent_style) {",
+											"  case \"OO\":",
+											"    pm.collectionVariables.set(\"expected_clinical_consent\", true);",
+											"    break;",
+											"  default:",
+											"    pm.collectionVariables.set(\"expected_clinical_consent\", false);",
+											"}"
 										],
 										"type": "text/javascript"
 									}
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [],
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"genetic_consent_style\": \"{{genetic_consent_style}}\",\n    \"clinical_consent_style\": \"{{clinical_consent_style}}\"\n}",
+									"options": {
+										"raw": {}
+									}
+								},
 								"url": {
-									"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/default_consents",
+									"raw": "{{scheme}}{{host}}{{base_path}}/participants",
 									"host": [
 										"{{scheme}}{{host}}{{base_path}}"
 									],
 									"path": [
-										"participants",
-										"{{study_identifier}}",
-										"default_consents"
+										"participants"
 									]
 								}
 							},
 							"response": [
 								{
-									"name": "Participant not found",
+									"name": "Forbidden to overwrite participant in post",
 									"originalRequest": {
-										"method": "GET",
+										"method": "POST",
 										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
 										"url": {
-											"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+											"raw": "{{baseUrl}}/participants",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"participants",
-												":study_identifier",
-												"default_consents"
-											],
-											"variable": [
-												{
-													"key": "study_identifier"
-												}
+												"participants"
 											]
 										}
 									},
-									"status": "Not Found",
-									"code": 404,
+									"status": "Method Not Allowed",
+									"code": 405,
 									"_postman_previewlanguage": "json",
 									"header": [
 										{
@@ -439,29 +122,26 @@
 									"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 								},
 								{
-									"name": "Return default consent",
+									"name": "Internal error - default consent not created",
 									"originalRequest": {
-										"method": "GET",
+										"method": "POST",
 										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
 										"url": {
-											"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+											"raw": "{{baseUrl}}/participants",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"participants",
-												":study_identifier",
-												"default_consents"
-											],
-											"variable": [
-												{
-													"key": "study_identifier"
-												}
+												"participants"
 											]
 										}
 									},
-									"status": "OK",
-									"code": 200,
+									"status": "Internal Server Error",
+									"code": 500,
 									"_postman_previewlanguage": "json",
 									"header": [
 										{
@@ -470,27 +150,187 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n \"genetic_consent_style\": \"SUF\",\n \"clinical_consent_style\": \"SUF\"\n}"
+									"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 								},
 								{
-									"name": "Internal error",
+									"name": "New default consent created",
 									"originalRequest": {
-										"method": "GET",
+										"method": "POST",
 										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
 										"url": {
-											"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+											"raw": "{{baseUrl}}/participants",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"participants",
-												":study_identifier",
-												"default_consents"
+												"participants"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Location",
+											"value": "<url>",
+											"description": ""
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"study_identifier\": \"<uuid>\",\n \"default_consent\": {\n  \"genetic_consent_style\": \"SUF\",\n  \"clinical_consent_style\": \"SUF\"\n }\n}"
+								}
+							]
+						},
+						{
+							"name": "Add a participant with null consent",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a075a9ea-94f5-4e29-ac1d-b3a6b130a021",
+										"exec": [
+											"// Test that request succeeded",
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"// Test that Location header is present",
+											"pm.test(\"Location header is present\", () => {",
+											"    pm.response.to.have.header(\"Location\");",
+											"});",
+											"",
+											"const responseData = pm.response.json();",
+											"",
+											"// Test that response schema is valid ",
+											"const schema = {",
+											"    \"study_identifier\": {\"type\": \"string\"}",
+											"};",
+											"pm.test('Response schema is valid', function() {",
+											"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {}
+									}
+								},
+								"url": {
+									"raw": "{{scheme}}{{host}}{{base_path}}/participants",
+									"host": [
+										"{{scheme}}{{host}}{{base_path}}"
+									],
+									"path": [
+										"participants"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New default consent created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/participants",
+											"host": [
+												"{{baseUrl}}"
 											],
-											"variable": [
-												{
-													"key": "study_identifier"
-												}
+											"path": [
+												"participants"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Location",
+											"value": "<url>",
+											"description": ""
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"study_identifier\": \"<uuid>\",\n \"default_consent\": {\n  \"genetic_consent_style\": \"SUF\",\n  \"clinical_consent_style\": \"SUF\"\n }\n}"
+								},
+								{
+									"name": "Forbidden to overwrite participant in post",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/participants",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"participants"
+											]
+										}
+									},
+									"status": "Method Not Allowed",
+									"code": 405,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Internal error - default consent not created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"genetic_consent_style\": \"SUF\",\n    \"clinical_consent_style\": \"SUF\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/participants",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"participants"
 											]
 										}
 									},
@@ -511,38 +351,38 @@
 					],
 					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
-				},
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "by {study identifier}",
+			"item": [
 				{
-					"name": "project consents",
+					"name": "GET DefaultConsent",
 					"item": [
 						{
-							"name": "POST ProjectConsent",
+							"name": "success (2xx)",
 							"item": [
 								{
-									"name": "Initialize project consent for a participant",
+									"name": "Get participant's default consent",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
-												"id": "b0dc752f-bc5a-4cea-98b5-d8d2fc82fdb4",
+												"id": "7be5b4d6-6134-4879-ba02-26b54e73ff82",
 												"exec": [
 													"// Test that request succeeded",
-													"pm.test(\"Successful POST request\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});",
-													"",
-													"// Test that Location header is present",
-													"pm.test(\"Location header is present\", () => {",
-													"    pm.response.to.have.header(\"Location\");",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
 													"});",
 													"",
 													"const responseData = pm.response.json();",
 													"",
 													"// Test that response schema is valid ",
 													"const schema = {",
-													"    \"project_application_id\": {\"type\": \"integer\"},",
-													"    \"study_identifier\": {\"type\": \"string\"},",
-													"    \"status\": {\"type\": \"string\"}",
+													"    \"genetic_consent_style:\": {\"type\": \"string\"},",
+													"    \"clinical_consent_style:\": {\"type\": \"string\"}",
 													"};",
 													"pm.test('Response schema is valid', function() {",
 													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
@@ -550,8 +390,8 @@
 													"",
 													"// Test that response values equal the expected values",
 													"pm.test(\"Response values satisfy expectations\", () => {",
-													"    pm.expect(responseData.project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
-													"    pm.expect(responseData.status).to.eql(\"Complete\");",
+													"    pm.expect(responseData.genetic_consent_style).to.eql(pm.iterationData.get(\"genetic_consent_style\"));",
+													"    pm.expect(responseData.clinical_consent_style).to.eql(pm.iterationData.get(\"clinical_consent_style\"));",
 													"});"
 												],
 												"type": "text/javascript"
@@ -559,51 +399,35 @@
 										}
 									],
 									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"project_application_id\": {{project_application_id}}\n}",
-											"options": {
-												"raw": {}
-											}
-										},
+										"method": "GET",
+										"header": [],
 										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/initialize_project_consent",
+											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/default_consents",
 											"host": [
 												"{{scheme}}{{host}}{{base_path}}"
 											],
 											"path": [
 												"participants",
 												"{{study_identifier}}",
-												"initialize_project_consent"
+												"default_consents"
 											]
 										}
 									},
 									"response": [
 										{
-											"name": "Project consent created",
+											"name": "Participant not found",
 											"originalRequest": {
-												"method": "POST",
+												"method": "GET",
 												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "\"<uuid>\""
-												},
 												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"participants",
 														":study_identifier",
-														"project_consents"
+														"default_consents"
 													],
 													"variable": [
 														{
@@ -612,24 +436,600 @@
 													]
 												}
 											},
-											"status": "Created",
-											"code": 201,
-											"_postman_previewlanguage": "text",
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
 											"header": [
 												{
-													"key": "Location",
-													"value": "<url>",
-													"description": ""
-												},
-												{
 													"key": "Content-Type",
-													"value": "text/plain"
+													"value": "application/json"
 												}
 											],
 											"cookie": [],
-											"body": ""
+											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Return default consent",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"participants",
+														":study_identifier",
+														"default_consents"
+													],
+													"variable": [
+														{
+															"key": "study_identifier"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"genetic_consent_style\": \"SUF\",\n \"clinical_consent_style\": \"SUF\"\n}"
+										},
+										{
+											"name": "Internal error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"participants",
+														":study_identifier",
+														"default_consents"
+													],
+													"variable": [
+														{
+															"key": "study_identifier"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 										}
 									]
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "client error (4xx)",
+							"item": [
+								{
+									"name": "Get default consent for nil participant",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a5916bd6-8582-4cf6-a47d-9092881b59a6",
+												"exec": [
+													"// Test that request succeeded",
+													"pm.test(\"Status code is 404\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"",
+													"const responseData = pm.response.json();",
+													"",
+													"// Test that response schema is valid ",
+													"const schema = {",
+													"    \"code:\": {\"type\": \"integer\"},",
+													"    \"message:\": {\"type\": \"string\"}",
+													"};",
+													"pm.test('Error response schema is valid', function() {",
+													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+													"});",
+													"",
+													"// Test that response values equal the expected values",
+													"pm.test(\"Error code is correct\", () => {",
+													"    pm.expect(responseData.code).to.eql(404001);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{scheme}}{{host}}{{base_path}}/participants/00000010-0000-0000-0000-000000000000/default_consents",
+											"host": [
+												"{{scheme}}{{host}}{{base_path}}"
+											],
+											"path": [
+												"participants",
+												"00000010-0000-0000-0000-000000000000",
+												"default_consents"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Participant not found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"participants",
+														":study_identifier",
+														"default_consents"
+													],
+													"variable": [
+														{
+															"key": "study_identifier"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Return default consent",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"participants",
+														":study_identifier",
+														"default_consents"
+													],
+													"variable": [
+														{
+															"key": "study_identifier"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"genetic_consent_style\": \"SUF\",\n \"clinical_consent_style\": \"SUF\"\n}"
+										},
+										{
+											"name": "Internal error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/participants/:study_identifier/default_consents",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"participants",
+														":study_identifier",
+														"default_consents"
+													],
+													"variable": [
+														{
+															"key": "study_identifier"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+										}
+									]
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "project consents",
+					"item": [
+						{
+							"name": "POST ProjectConsent",
+							"item": [
+								{
+									"name": "success",
+									"item": [
+										{
+											"name": "Initialize project consent for a participant",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "b0dc752f-bc5a-4cea-98b5-d8d2fc82fdb4",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Successful POST request\", function () {",
+															"    pm.response.to.have.status(201);",
+															"});",
+															"",
+															"// Test that Location header is present",
+															"pm.test(\"Location header is present\", () => {",
+															"    pm.response.to.have.header(\"Location\");",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"project_application_id\": {\"type\": \"integer\"},",
+															"    \"study_identifier\": {\"type\": \"string\"},",
+															"    \"status\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Response values satisfy expectations\", () => {",
+															"    pm.expect(responseData.project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
+															"    pm.expect(responseData.status).to.eql(\"Complete\");",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": {{project_application_id}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/initialize_project_consent",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"initialize_project_consent"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Project consent created",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "\"<uuid>\""
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Location",
+															"value": "<url>",
+															"description": ""
+														},
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "client error (4xx)",
+									"item": [
+										{
+											"name": "Initialize project consent for a nil participant",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "113cd0aa-fd4d-4cc7-a60d-e3de5ae3ad44",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 404\", function () {",
+															"    pm.response.to.have.status(404);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(404003);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": {{project_application_id}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/00000000-0000-0000-0000-000000000000/initialize_project_consent",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"00000000-0000-0000-0000-000000000000",
+														"initialize_project_consent"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Project consent created",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "\"<uuid>\""
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Location",
+															"value": "<url>",
+															"description": ""
+														},
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "Duplicate a project consent initialization request",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "ba3f6be2-daee-45f7-895f-e100259678c8",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 403\", function () {",
+															"    pm.response.to.have.status(403);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(403001);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": {{project_application_id}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/initialize_project_consent",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"initialize_project_consent"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Project consent created",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "\"<uuid>\""
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Location",
+															"value": "<url>",
+															"description": ""
+														},
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
 								}
 							],
 							"protocolProfileBehavior": {},
@@ -639,420 +1039,753 @@
 							"name": "GET ProjectConsents",
 							"item": [
 								{
-									"name": "Initialize additional project consent for a participant",
-									"event": [
+									"name": "pre-test requests",
+									"item": [
 										{
-											"listen": "test",
-											"script": {
-												"id": "744115ff-372c-4642-962b-6fec6b0bb74f",
-												"exec": [
-													"// Test that request succeeded",
-													"pm.test(\"Successful POST request\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"project_application_id\": 0\n}",
-											"options": {
-												"raw": {}
-											}
-										},
-										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/initialize_project_consent",
-											"host": [
-												"{{scheme}}{{host}}{{base_path}}"
+											"name": "Initialize additional project consent for a participant",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "744115ff-372c-4642-962b-6fec6b0bb74f",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Successful POST request\", function () {",
+															"    pm.response.to.have.status(201);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
 											],
-											"path": [
-												"participants",
-												"{{study_identifier}}",
-												"initialize_project_consent"
-											]
-										},
-										"description": "This request prefaces the GET tests, so that the GET all ProjectConsents test can retrieve multiple resources."
-									},
-									"response": [
-										{
-											"name": "Project consent created",
-											"originalRequest": {
+											"request": {
 												"method": "POST",
-												"header": [],
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
 												"body": {
 													"mode": "raw",
-													"raw": "\"<uuid>\""
+													"raw": "{\n    \"project_application_id\": 0\n}",
+													"options": {
+														"raw": {}
+													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/initialize_project_consent",
 													"host": [
-														"{{baseUrl}}"
+														"{{scheme}}{{host}}{{base_path}}"
 													],
 													"path": [
 														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
+														"{{study_identifier}}",
+														"initialize_project_consent"
 													]
-												}
-											},
-											"status": "Created",
-											"code": 201,
-											"_postman_previewlanguage": "text",
-											"header": [
-												{
-													"key": "Location",
-													"value": "<url>",
-													"description": ""
 												},
-												{
-													"key": "Content-Type",
-													"value": "text/plain"
-												}
-											],
-											"cookie": [],
-											"body": ""
-										}
-									]
-								},
-								{
-									"name": "Get all of the participant's project consents",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "cc42d01c-5744-4d92-ab60-edcf32705cc1",
-												"exec": [
-													"// Test that request succeeded",
-													"pm.test(\"Status code is 200\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"const responseData = pm.response.json();",
-													"",
-													"// Test that response schema is valid ",
-													"const schema = {",
-													"    \"items\": {",
-													"        \"project_application_id\": {\"type\": \"integer\"},",
-													"        \"genetic_consent\": {\"type\": \"boolean\"},",
-													"        \"clinical_consent\": {\"type\": \"boolean\"}",
-													"    }",
-													"};",
-													"pm.test('Response schema is valid', function() {",
-													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-													"});",
-													"",
-													"// Test that two results are returned",
-													"pm.test(\"Response contains exactly two results\", () => {",
-													"    pm.expect(responseData).to.have.lengthOf(2);",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents",
-											"host": [
-												"{{scheme}}{{host}}{{base_path}}"
-											],
-											"path": [
-												"participants",
-												"{{study_identifier}}",
-												"project_consents"
-											]
-										}
-									},
-									"response": [
-										{
-											"name": "Return all affiliated project consents",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
+												"description": "This request prefaces the GET tests, so that the GET all ProjectConsents test can retrieve multiple resources."
 											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
+											"response": [
 												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
-										},
-										{
-											"name": "Internal error",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
+													"name": "Project consent created",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "\"<uuid>\""
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
 														}
-													]
-												}
-											},
-											"status": "Internal Server Error",
-											"code": 500,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										},
-										{
-											"name": "Participant not found",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "text",
+													"header": [
 														{
-															"key": "study_identifier"
+															"key": "Location",
+															"value": "<url>",
+															"description": ""
+														},
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
 														}
-													]
-												}
-											},
-											"status": "Not Found",
-											"code": 404,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "Get one project consent",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "a310b90b-86a5-434c-8cc0-d5ec40dd627f",
-												"exec": [
-													"// Test that request succeeded",
-													"pm.test(\"Status code is 200\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"const responseData = pm.response.json();",
-													"",
-													"// Test that response schema is valid ",
-													"const schema = {",
-													"    \"items\": {",
-													"        \"project_application_id\": {\"type\": \"integer\"},",
-													"        \"genetic_consent\": {\"type\": \"boolean\"},",
-													"        \"clinical_consent\": {\"type\": \"boolean\"}",
-													"    }",
-													"};",
-													"pm.test('Response schema is valid', function() {",
-													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-													"});",
-													"",
-													"// Test that only one result is returned",
-													"pm.test(\"Response contains exactly one result\", () => {",
-													"    pm.expect(responseData).to.have.lengthOf(1);",
-													"})",
-													"",
-													"// Test that response values equal the expected values",
-													"pm.test(\"Response values satisfy expectations\", () => {",
-													"    pm.expect(responseData[0].project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
-													"    pm.expect(responseData[0].genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
-													"    pm.expect(responseData[0].clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents?project_application_id={{project_application_id}}",
-											"host": [
-												"{{scheme}}{{host}}{{base_path}}"
-											],
-											"path": [
-												"participants",
-												"{{study_identifier}}",
-												"project_consents"
-											],
-											"query": [
-												{
-													"key": "project_application_id",
-													"value": "{{project_application_id}}"
+													],
+													"cookie": [],
+													"body": ""
 												}
 											]
 										}
-									},
-									"response": [
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "success (2xx)",
+									"item": [
 										{
-											"name": "Internal error",
-											"originalRequest": {
+											"name": "Get all of the participant's project consents",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "cc42d01c-5744-4d92-ab60-edcf32705cc1",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 200\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"items\": {",
+															"        \"project_application_id\": {\"type\": \"integer\"},",
+															"        \"genetic_consent\": {\"type\": \"boolean\"},",
+															"        \"clinical_consent\": {\"type\": \"boolean\"}",
+															"    }",
+															"};",
+															"pm.test('Response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that two results are returned",
+															"pm.test(\"Response contains exactly two results\", () => {",
+															"    pm.expect(responseData).to.have.lengthOf(2);",
+															"})"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents",
 													"host": [
-														"{{baseUrl}}"
+														"{{scheme}}{{host}}{{base_path}}"
 													],
 													"path": [
 														"participants",
-														":study_identifier",
+														"{{study_identifier}}",
 														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
 													]
 												}
 											},
-											"status": "Internal Server Error",
-											"code": 500,
-											"_postman_previewlanguage": "json",
-											"header": [
+											"response": [
 												{
-													"key": "Content-Type",
-													"value": "application/json"
+													"name": "Return all affiliated project consents",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
+												},
+												{
+													"name": "Internal error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+											]
 										},
 										{
-											"name": "Return all affiliated project consents",
-											"originalRequest": {
+											"name": "Get one project consent",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "a310b90b-86a5-434c-8cc0-d5ec40dd627f",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 200\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"items\": {",
+															"        \"project_application_id\": {\"type\": \"integer\"},",
+															"        \"genetic_consent\": {\"type\": \"boolean\"},",
+															"        \"clinical_consent\": {\"type\": \"boolean\"}",
+															"    }",
+															"};",
+															"pm.test('Response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that only one result is returned",
+															"pm.test(\"Response contains exactly one result\", () => {",
+															"    pm.expect(responseData).to.have.lengthOf(1);",
+															"})",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Response values satisfy expectations\", () => {",
+															"    pm.expect(responseData[0].project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
+															"    pm.expect(responseData[0].genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
+															"    pm.expect(responseData[0].clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents?project_application_id={{project_application_id}}",
 													"host": [
-														"{{baseUrl}}"
+														"{{scheme}}{{host}}{{base_path}}"
 													],
 													"path": [
 														"participants",
-														":study_identifier",
+														"{{study_identifier}}",
 														"project_consents"
 													],
-													"variable": [
+													"query": [
 														{
-															"key": "study_identifier"
+															"key": "project_application_id",
+															"value": "{{project_application_id}}"
 														}
 													]
 												}
 											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
+											"response": [
 												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
-										},
-										{
-											"name": "Participant not found",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
+													"name": "Internal error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
 														}
-													]
-												}
-											},
-											"status": "Not Found",
-											"code": 404,
-											"_postman_previewlanguage": "json",
-											"header": [
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
 												{
-													"key": "Content-Type",
-													"value": "application/json"
+													"name": "Return all affiliated project consents",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+											]
 										}
-									]
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "client error (4xx)",
+									"item": [
+										{
+											"name": "Get nil participant's project consents",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "77cfab1d-5f27-4edc-866e-62834be5bb9d",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 404\", function () {",
+															"    pm.response.to.have.status(404);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(404002);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/00000000-0000-0000-0000-000000000000/project_consents",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"00000000-0000-0000-0000-000000000000",
+														"project_consents"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Return all affiliated project consents",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
+												},
+												{
+													"name": "Internal error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Get project consent for unknown project",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "1c994bf0-af82-4b6a-9d26-e09018b6074c",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 404\", function () {",
+															"    pm.response.to.have.status(404);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(404001);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents?project_application_id=555555555",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"project_consents"
+													],
+													"query": [
+														{
+															"key": "project_application_id",
+															"value": "555555555"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Internal error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Return all affiliated project consents",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
+												}
+											]
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
 								}
 							],
 							"protocolProfileBehavior": {},
@@ -1062,396 +1795,840 @@
 							"name": "PUT ProjectConsent",
 							"item": [
 								{
-									"name": "Update participant's project consent",
-									"event": [
+									"name": "success (2xx)",
+									"item": [
 										{
-											"listen": "test",
-											"script": {
-												"id": "e3cef9c9-80f3-4e79-9774-0dc45da9d92b",
-												"exec": [
-													"// Test that request succeeded",
-													"pm.test(\"Status code is 200\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"const responseData = pm.response.json();",
-													"",
-													"// Test that response schema is valid ",
-													"const schema = {",
-													"    \"project_application_id\": {\"type\": \"integer\"},",
-													"    \"genetic_consent\": {\"type\": \"boolean\"},",
-													"    \"clinical_consent\": {\"type\": \"boolean\"}",
-													"};",
-													"pm.test('Response schema is valid', function() {",
-													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-													"});",
-													"",
-													"// Set the expected consents for this and subsequent requests",
-													"const requestData = JSON.parse(request.data);",
-													"pm.collectionVariables.set(\"expected_genetic_consent\", requestData.genetic_consent);",
-													"pm.collectionVariables.set(\"expected_clinical_consent\", requestData.clinical_consent);",
-													"",
-													"// Test that response values equal the expected values",
-													"pm.test(\"Response values satisfy expectations\", () => {",
-													"    pm.expect(responseData.project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
-													"    pm.expect(responseData.genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
-													"    pm.expect(responseData.clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"project_application_id\": {{project_application_id}},\n    \"genetic_consent\": {{genetic_consent}},\n    \"clinical_consent\": {{clinical_consent}}\n}",
-											"options": {
-												"raw": {}
-											}
-										},
-										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents",
-											"host": [
-												"{{scheme}}{{host}}{{base_path}}"
+											"name": "Update participant's project consent",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "e3cef9c9-80f3-4e79-9774-0dc45da9d92b",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 200\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"project_application_id\": {\"type\": \"integer\"},",
+															"    \"genetic_consent\": {\"type\": \"boolean\"},",
+															"    \"clinical_consent\": {\"type\": \"boolean\"}",
+															"};",
+															"pm.test('Response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Set the expected consents for this and subsequent requests",
+															"const requestData = JSON.parse(request.data);",
+															"pm.collectionVariables.set(\"expected_genetic_consent\", requestData.genetic_consent);",
+															"pm.collectionVariables.set(\"expected_clinical_consent\", requestData.clinical_consent);",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Response values satisfy expectations\", () => {",
+															"    pm.expect(responseData.project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
+															"    pm.expect(responseData.genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
+															"    pm.expect(responseData.clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
 											],
-											"path": [
-												"participants",
-												"{{study_identifier}}",
-												"project_consents"
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": {{project_application_id}},\n    \"genetic_consent\": {{genetic_consent}},\n    \"clinical_consent\": {{clinical_consent}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"project_consents"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Forbidden to post project consent; see /project_consents/initialize endpoint instead.",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Method Not Allowed",
+													"code": 405,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Internal error - project consent not created",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Project consent updated",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "Confirm successful PUT",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "a3c5c666-6f1e-4565-be5e-f8a8132b58e2",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 200\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"items\": {",
+															"        \"project_application_id\": {\"type\": \"integer\"},",
+															"        \"genetic_consent\": {\"type\": \"boolean\"},",
+															"        \"clinical_consent\": {\"type\": \"boolean\"}",
+															"    }",
+															"};",
+															"pm.test('Response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that only one result is returned",
+															"pm.test(\"Response contains exactly one result\", () => {",
+															"    pm.expect(responseData).to.have.lengthOf(1);",
+															"})",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Response values satisfy expectations\", () => {",
+															"    pm.expect(responseData[0].project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
+															"    pm.expect(responseData[0].genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
+															"    pm.expect(responseData[0].clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents?project_application_id={{project_application_id}}",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"project_consents"
+													],
+													"query": [
+														{
+															"key": "project_application_id",
+															"value": "{{project_application_id}}"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Return all affiliated project consents",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
+												},
+												{
+													"name": "Internal error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												}
 											]
 										}
-									},
-									"response": [
-										{
-											"name": "Forbidden to post project consent; see /project_consents/initialize endpoint instead.",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
-												},
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "Method Not Allowed",
-											"code": 405,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										},
-										{
-											"name": "Participant not found",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
-												},
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "Not Found",
-											"code": 404,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										},
-										{
-											"name": "Internal error - project consent not created",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
-												},
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "Internal Server Error",
-											"code": 500,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										},
-										{
-											"name": "Project consent updated",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
-												},
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "No Content",
-											"code": 204,
-											"_postman_previewlanguage": "text",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "text/plain"
-												}
-											],
-											"cookie": [],
-											"body": ""
-										}
-									]
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
 								},
 								{
-									"name": "Confirm successful PUT",
-									"event": [
+									"name": "client error (4xx)",
+									"item": [
 										{
-											"listen": "test",
-											"script": {
-												"id": "a3c5c666-6f1e-4565-be5e-f8a8132b58e2",
-												"exec": [
-													"// Test that request succeeded",
-													"pm.test(\"Status code is 200\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"const responseData = pm.response.json();",
-													"",
-													"// Test that response schema is valid ",
-													"const schema = {",
-													"    \"items\": {",
-													"        \"project_application_id\": {\"type\": \"integer\"},",
-													"        \"genetic_consent\": {\"type\": \"boolean\"},",
-													"        \"clinical_consent\": {\"type\": \"boolean\"}",
-													"    }",
-													"};",
-													"pm.test('Response schema is valid', function() {",
-													"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
-													"});",
-													"",
-													"// Test that only one result is returned",
-													"pm.test(\"Response contains exactly one result\", () => {",
-													"    pm.expect(responseData).to.have.lengthOf(1);",
-													"})",
-													"",
-													"// Test that response values equal the expected values",
-													"pm.test(\"Response values satisfy expectations\", () => {",
-													"    pm.expect(responseData[0].project_application_id).to.eql(Number(pm.iterationData.get(\"project_application_id\")));",
-													"    pm.expect(responseData[0].genetic_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_genetic_consent\")));",
-													"    pm.expect(responseData[0].clinical_consent).to.eql(Boolean(pm.collectionVariables.get(\"expected_clinical_consent\")));",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents?project_application_id={{project_application_id}}",
-											"host": [
-												"{{scheme}}{{host}}{{base_path}}"
-											],
-											"path": [
-												"participants",
-												"{{study_identifier}}",
-												"project_consents"
-											],
-											"query": [
+											"name": "Update nil participant's project consent",
+											"event": [
 												{
-													"key": "project_application_id",
-													"value": "{{project_application_id}}"
+													"listen": "test",
+													"script": {
+														"id": "e634d332-5603-49d4-8d4d-fb5e27d9f472",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 404\", function () {",
+															"    pm.response.to.have.status(404);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(404001);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": {{project_application_id}},\n    \"genetic_consent\": {{genetic_consent}},\n    \"clinical_consent\": {{clinical_consent}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/00000000-0000-0000-0000-000000000000/project_consents",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"00000000-0000-0000-0000-000000000000",
+														"project_consents"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Internal error - project consent not created",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Forbidden to post project consent; see /project_consents/initialize endpoint instead.",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Method Not Allowed",
+													"code": 405,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Project consent updated",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "Update project consent for unknown project",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "1e220e2e-914e-4a11-8b7c-10125e6fc2a4",
+														"exec": [
+															"// Test that request succeeded",
+															"pm.test(\"Status code is 404\", function () {",
+															"    pm.response.to.have.status(404);",
+															"});",
+															"",
+															"const responseData = pm.response.json();",
+															"",
+															"// Test that response schema is valid ",
+															"const schema = {",
+															"    \"code:\": {\"type\": \"integer\"},",
+															"    \"message:\": {\"type\": \"string\"}",
+															"};",
+															"pm.test('Error response schema is valid', function() {",
+															"    pm.expect(tv4.validate(responseData, schema)).to.be.true;",
+															"});",
+															"",
+															"// Test that response values equal the expected values",
+															"pm.test(\"Error code is correct\", () => {",
+															"    pm.expect(responseData.code).to.eql(404001);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"project_application_id\": 555555555,\n    \"genetic_consent\": {{genetic_consent}},\n    \"clinical_consent\": {{clinical_consent}}\n}",
+													"options": {
+														"raw": {}
+													}
+												},
+												"url": {
+													"raw": "{{scheme}}{{host}}{{base_path}}/participants/{{study_identifier}}/project_consents",
+													"host": [
+														"{{scheme}}{{host}}{{base_path}}"
+													],
+													"path": [
+														"participants",
+														"{{study_identifier}}",
+														"project_consents"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Forbidden to post project consent; see /project_consents/initialize endpoint instead.",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Method Not Allowed",
+													"code": 405,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Project consent updated",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal error - project consent not created",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Participant not found",
+													"originalRequest": {
+														"method": "PUT",
+														"header": [],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"application_id\": \"<uuid>\",\n    \"genetic_consent\": false,\n    \"clinical_consent\": false\n}"
+														},
+														"url": {
+															"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"participants",
+																":study_identifier",
+																"project_consents"
+															],
+															"variable": [
+																{
+																	"key": "study_identifier"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
 												}
 											]
 										}
-									},
-									"response": [
-										{
-											"name": "Participant not found",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "Not Found",
-											"code": 404,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										},
-										{
-											"name": "Return all affiliated project consents",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"application_id\": \"<uuid>\",\n \"genetic_consent\": false,\n \"clinical_consent\": false\n}"
-										},
-										{
-											"name": "Internal error",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/participants/:study_identifier/project_consents",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"participants",
-														":study_identifier",
-														"project_consents"
-													],
-													"variable": [
-														{
-															"key": "study_identifier"
-														}
-													]
-												}
-											},
-											"status": "Internal Server Error",
-											"code": 500,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "application/json"
-												}
-											],
-											"cookie": [],
-											"body": "{\n \"code\": \"<integer>\",\n \"message\": \"<string>\"\n}"
-										}
-									]
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
 								}
 							],
 							"protocolProfileBehavior": {},
@@ -1489,57 +2666,57 @@
 	],
 	"variable": [
 		{
-			"id": "6313fdd4-e285-48ce-a861-3c8e3a7fcb1d",
+			"id": "a4d11946-6734-4859-ad18-6cf1d81a29ac",
 			"key": "scheme",
 			"value": "http://"
 		},
 		{
-			"id": "e67329cb-cc42-47da-8644-54a60b7eebf6",
+			"id": "1d9e40eb-d1c9-4b95-9178-d5d0545b804a",
 			"key": "host",
 			"value": "0.0.0.0:3001"
 		},
 		{
-			"id": "2efe799a-fe8f-42c0-93fa-6aea58de7f6d",
+			"id": "c60d056d-7765-4f95-bf56-ff2961309999",
 			"key": "base_path",
 			"value": "/v0"
 		},
 		{
-			"id": "06f9a6f4-bdbb-4a4a-9f73-bf0465055037",
+			"id": "a3d62965-4939-463b-b76e-4e8d23d15513",
 			"key": "study_identifier",
 			"value": ""
 		},
 		{
-			"id": "ac5f75eb-ac19-4178-9ae6-22e30b8389e8",
+			"id": "13f86cf8-7b86-4fe7-8d6a-3dfd42720296",
 			"key": "project_application_id",
 			"value": "123"
 		},
 		{
-			"id": "ab431750-d7fa-4564-a73d-76294cda11c1",
+			"id": "6287cd79-ef4f-4f09-8ee1-0aecfb115769",
 			"key": "genetic_consent_style",
 			"value": "SUF"
 		},
 		{
-			"id": "5384480c-8fe1-44f6-8224-2871ae125210",
+			"id": "2faebade-25a5-4cac-a5f6-d1f5d656b126",
 			"key": "clinical_consent_style",
 			"value": "SUF"
 		},
 		{
-			"id": "923ede45-fdbf-44d2-8d91-899c2f1d7ea3",
+			"id": "2390fb20-baa4-4151-b435-67753432cfe8",
 			"key": "genetic_consent",
 			"value": "false"
 		},
 		{
-			"id": "39ea83b1-2425-44bb-a0f8-4533286011cd",
+			"id": "b06b2388-cad9-4e43-82da-4d56439addbf",
 			"key": "clinical_consent",
 			"value": "false"
 		},
 		{
-			"id": "09129ebc-084d-4b90-a53d-edc5f573c542",
+			"id": "fc4cb5fb-fcac-4817-9859-2269a25fa8c1",
 			"key": "expected_genetic_consent",
 			"value": "false"
 		},
 		{
-			"id": "b8d858ee-df32-410a-b325-b1a830415979",
+			"id": "8079071f-51be-4aed-a4d6-49aff5e37e49",
 			"key": "expected_clinical_consent",
 			"value": "false"
 		}
