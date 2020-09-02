@@ -10,12 +10,6 @@ The code descriptions provided here are not intended to replace the error messag
 
 ##### 403001
 
-Attempted a forbidden "GET all"-type request.
-
-GET requests for this resource are permitted only with some query parameters provided in the query string.
-
-##### 403002
-
 Attempted to post a forbidden duplicate of an existing resource.
 
 ##### 404001
@@ -25,6 +19,10 @@ Requested record cannot be found. The given record ID does not correspond with a
 ##### 404002
 
 The resource by which you are attempting to query for other data cannot be found. The given record ID does not correspond with any existing data for this resource.
+
+##### 404003
+
+The resource associated with the data that you are attempting to create or update cannot be found. The given record ID does not correspond with any existing data for that resource.
 
 ## 500--- Codes
 

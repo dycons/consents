@@ -43,7 +43,7 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	}
 	if projectConsentExists {
 		message := "Duplicates the request for the initialization of a ProjectConsent."
-		var code int64 = 403002
+		var code int64 = 403001
 
 		log.Write(params.HTTPRequest, code, err).Warn(message)
 		errPayload := &apimodels.Error{Code: &code, Message: &message}
@@ -53,8 +53,8 @@ func InitializeProjectConsent(params operations.InitializeProjectConsentParams, 
 	// Find the DefaultConsent associated with the uuid given in the request
 	defaultConsent, err := utilities.FindOneDefaultConsent(participantID.String(), tx)
 	if err != nil {
-		message := "This DefaultConsent cannot be found"
-		var code int64 = 404001
+		message := "This Participant cannot be found"
+		var code int64 = 404003
 
 		log.Write(params.HTTPRequest, code, err).Warn(message)
 		errPayload := &apimodels.Error{Code: &code, Message: &message}
