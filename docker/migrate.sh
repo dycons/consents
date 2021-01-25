@@ -45,7 +45,7 @@ while getopts ":hdtf:s:" opt; do
         ;;
     f)  composefile="$OPTARG"
         ;;
-	  s)  service="$OPTARG"
+	s)  service="$OPTARG"
 		    ;;
     \?) echo "Invalid option -$OPTARG" >&2
         ;;

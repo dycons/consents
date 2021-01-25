@@ -71,7 +71,6 @@ paths:
             $ref: '#/definitions/ProjectConsentInitialization'
             example:
               project_application_id: 0
-              status: "Complete"
       responses:
         201:
           description: Project consent created
