@@ -1,5 +1,4 @@
 // This file is safe to edit. Once it exists it will not be overwritten
-
 package restapi
 
 import (
@@ -45,8 +44,8 @@ func configureAPI(api *operations.ConsentsServiceAPI) http.Handler {
 	api.GetProjectConsentsByParticipantHandler = operations.GetProjectConsentsByParticipantHandlerFunc(func(params operations.GetProjectConsentsByParticipantParams) middleware.Responder {
 		return handlers.GetProjectConsentsByParticipant(params, tx)
 	})
-	api.InitializeProjectConsentHandler = operations.InitializeProjectConsentHandlerFunc(func(params operations.InitializeProjectConsentParams) middleware.Responder {
-		return handlers.InitializeProjectConsent(params, tx)
+	api.AddRemsEntitlementHandler = operations.AddRemsEntitlementHandlerFunc(func(params operations.AddRemsEntitlementParams) middleware.Responder {
+		return handlers.AddRemsEntitlement(params, tx)
 	})
 	api.PostParticipantHandler = operations.PostParticipantHandlerFunc(func(params operations.PostParticipantParams) middleware.Responder {
 		return handlers.PostParticipant(params, tx)

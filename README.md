@@ -23,9 +23,9 @@ If you are interested in contributing to this toy service, or in building someth
 ## Quick Start
 
 1. Install [Docker v18.06.0+](https://docs.docker.com/get-docker/) and [Docker Compose v3.7+](https://docs.docker.com/compose/install/). You can check which version, if any, is already installed by running `docker --version` and `docker-compose --version`. Any versions greater than or equal to the ones stated here should do.
-2. Checkout this go-model-service repository:
+2. Clone this consents repository:
   ```
-  git checkout https://github.com/dycons/consents.git
+  git clone https://github.com/dycons/consents.git
   cd consents
   ```
 3. Set up the build environment by generating a `.env` file for Docker Compose to use:

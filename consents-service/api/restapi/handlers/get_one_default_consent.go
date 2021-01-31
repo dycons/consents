@@ -21,7 +21,7 @@ func GetOneDefaultConsent(params operations.GetOneDefaultConsentParams, tx *pop.
 	if err != nil {
 		log.Write(params.HTTPRequest, 500000, err).Error("Transforming the StudyIdentifier from API to data formats failed")
 		errPayload := errors.DefaultInternalServerError()
-		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+		return operations.NewGetOneDefaultConsentInternalServerError().WithPayload(errPayload)
 	}
 
 	// Find the DefaultConsent associated with the uuid given in the request

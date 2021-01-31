@@ -1,6 +1,3 @@
-/*
-Package utilities implements general-purpose utility functions for use by the restapi handlers.
-*/
 package utilities
 
 import (

@@ -20,7 +20,7 @@ func PutProjectConsent(params operations.PutProjectConsentParams, tx *pop.Connec
 	if err != nil {
 		log.Write(params.HTTPRequest, 500000, err).Error("Transforming the StudyIdentifier from API to data formats failed")
 		errPayload := errors.DefaultInternalServerError()
-		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+		return operations.NewPutProjectConsentInternalServerError().WithPayload(errPayload)
 	}
 
 	// Fetch the ProjectConsent for this combination of project application and participant
@@ -38,7 +38,7 @@ func PutProjectConsent(params operations.PutProjectConsentParams, tx *pop.Connec
 		// Handle any other error as an internal server error
 		log.Write(params.HTTPRequest, 500000, err).Error("Retrieving the existing ProjectConsent from the database failed")
 		errPayload := errors.DefaultInternalServerError()
-		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+		return operations.NewPutProjectConsentInternalServerError().WithPayload(errPayload)
 	}
 
 	// Update the ProjectConsent with the data in the payload

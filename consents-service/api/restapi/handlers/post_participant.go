@@ -22,7 +22,7 @@ func PostParticipant(params operations.PostParticipantParams, tx *pop.Connection
 		log.Write(params.HTTPRequest, 500000, err).Error("Data schema validation for the Participant failed with the following validation errors: " +
 			validationErrors.Error())
 		errPayload := errors.DefaultInternalServerError()
-		return operations.NewInitializeProjectConsentInternalServerError().WithPayload(errPayload)
+		return operations.NewPostParticipantInternalServerError().WithPayload(errPayload)
 	}
 	if err != nil {
 		log.Write(params.HTTPRequest, 500000, err).Error("Creation of the Participant into the database failed without validation errors.")
