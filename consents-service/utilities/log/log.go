@@ -4,9 +4,10 @@ Package log implements logrus-powered logging functionality
 package log
 
 import (
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Init initializes the logger according to command-line-provided config parameters.
@@ -26,9 +27,7 @@ func Write(HTTPRequest *http.Request, code int64, err error) *logrus.Entry {
 	entry := logrus.WithFields(logrus.Fields{
 		"service": "consents-service",
 		"version": "0.0.1",
-		"stage":   "HTTPRequest",
-		"host":    HTTPRequest.Host,
-		"ip":      HTTPRequest.RemoteAddr})
+		"stage":   "HTTPRequest"})
 
 	if HTTPRequest != nil {
 		entry = entry.WithField("host", HTTPRequest.Host)

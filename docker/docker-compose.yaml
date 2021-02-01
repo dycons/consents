@@ -1,0 +1,64 @@
+# Build from project root with:
+#     docker-compose -f docker/docker-compose.dev.yml up 
+# or, with forced re-build of apps:
+#     docker-compose -f docker/docker-compose.dev.yml up --force-recreate --build
+
+version: "3.7"
+services:
+  db-consents:
+    # Use postgres 11.7 image to match stable postgres-client debian
+    image: "postgres:11.7-alpine"
+    environment:
+      POSTGRES_DB: ${CONSENTS_POSTGRES_DB}
+      POSTGRES_USER: ${CONSENTS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CONSENTS_POSTGRES_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - consents-db-data:/var/lib/postgresql/data/
+  
+  # Build ONE of the two consents app services. They share a database and port.
+  consents:
+    build:
+      context: ..
+      dockerfile: ./docker/test.Dockerfile
+      target: consents
+      args:
+        - API_PATH=${CONSENTS_PROJECT_ROOT}/consents-service/api 
+        - SWAGGERFILE=${CONSENTS_PROJECT_ROOT}/swagger.yaml   
+    environment:
+      POSTGRES_DB: ${CONSENTS_POSTGRES_DB}
+      POSTGRES_USER: ${CONSENTS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CONSENTS_POSTGRES_PASSWORD}
+      POSTGRES_HOST: "db-consents"
+      POSTGRES_PORT: 5432
+      GOPATH: ${GOPATH}
+      APP_PATH: ${CONSENTS_PROJECT_ROOT}/consents-service
+    depends_on:
+      - db-consents
+    ports:
+      - "3005:3005"
+  consents-dev:
+    build:
+      context: ..
+      dockerfile: ./docker/dev.Dockerfile
+      target: consents-dev
+      args:
+        - API_PATH=${CONSENTS_PROJECT_ROOT}/consents-service/api
+        - SWAGGERFILE=${CONSENTS_PROJECT_ROOT}/swagger.yaml
+    environment:
+      POSTGRES_DB: ${CONSENTS_POSTGRES_DB}
+      POSTGRES_USER: ${CONSENTS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CONSENTS_POSTGRES_PASSWORD}
+      POSTGRES_HOST: "db-consents"
+      POSTGRES_PORT: 5432
+      GOPATH: ${GOPATH}
+      APP_PATH: ${CONSENTS_PROJECT_ROOT}/consents-service
+    depends_on:
+      - db-consents
+    ports:
+      - "3005:3005"
+    privileged: true
+
+volumes:
+  consents-db-data:

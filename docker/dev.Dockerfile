@@ -7,7 +7,7 @@
 #       docker run -it --rm dyconsent/consents-app-dev
 
 # Modify this line if you want to use a different stack/dependencies-image
-FROM dyconsent/consents-deps AS consents-app-dev
+FROM dyconsent/consents-deps AS consents-dev
 
 ARG API_PATH=/go/src/github.com/dycons/consents/consents-service/api
 ARG SWAGGERFILE=/go/src/github.com/dycons/consents/swagger.yaml
@@ -40,5 +40,5 @@ RUN go get github.com/go-delve/delve/cmd/dlv
 
 # Run the consents service
 # Can attach the debugger (at port :2345) by running ./dev/dlv.sh from within the container
-EXPOSE 3001
-ENTRYPOINT ./app --port=3001 --host=0.0.0.0
+EXPOSE 3005
+ENTRYPOINT ./app --port=3005 --host=0.0.0.0

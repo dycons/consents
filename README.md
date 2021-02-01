@@ -32,9 +32,9 @@ If you are interested in contributing to this toy service, or in building someth
   ```
   cp default.env .env
   ```
-4. From the project root directory, run the test server. It is presently configured to run on port `0.0.0.0:3000`. If you prefer to run the development container, replace `test` with `dev` in all following instructions.
+4. From the project root directory, run the test server. It is presently configured to run on port `0.0.0.0:3005`. If you prefer to run the development container, replace `consents` with `consents-dev` below.
   ```
-  docker-compose -f docker/docker-compose.test.yml up
+  docker-compose -f docker/docker-compose.yaml up consents
   ```
 5. In a new shell (or the same shell if `docker-compose up --detach` was run), run the migrations script to prepare the database for use. Run it with the `-t` flag for the `test` instance and the `-d` flag for the `dev` instance.
   ```

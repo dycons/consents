@@ -21,7 +21,7 @@ before_install:
  - cp default.env .env
 
 install:
- - docker-compose -f docker/docker-compose.test.yml up --detach
+ - docker-compose -f docker/docker-compose.yaml up --detach consents
  - ./docker/migrate.sh -t
 
 before_script:

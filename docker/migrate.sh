@@ -15,8 +15,8 @@ help ()
    echo "   -h      Display this help text"
    echo "   -d      Migrate the dev service (this is the default behaviour)."
    echo "   -t      Migrate the test service."
-   echo "   -f      Docker-compose filename. Default: ./docker/docker-compose.dev.yml"
-   echo "   -s      Docker service container to exec the migration in. Default: consents-app-dev"
+   echo "   -f      Docker-compose filename. Default: ./docker/docker-compose.yaml"
+   echo "   -s      Docker service container to exec the migration in. Default: consents"
    echo
 }
 
@@ -27,9 +27,9 @@ help ()
 ################################################################################
 
 # Default docker-compose filename. Can overwrite with -f argument.
-composefile="./docker/docker-compose.dev.yml"
+composefile="./docker/docker-compose.yaml"
 # Default service name to exec the migration in. Can overwrite with -c argument.
-service="consents-app-dev"
+service="consents"
 
 # Optionally overwrite image version, Dockerfile, or Docker username
 while getopts ":hdtf:s:" opt; do
@@ -37,16 +37,14 @@ while getopts ":hdtf:s:" opt; do
     h)  help
         exit
         ;;
-    d)  composefile="./docker/docker-compose.dev.yml"
-        service="consents-app-dev"
+    d)  service="consents-dev"
         ;;
-    t)  composefile="./docker/docker-compose.test.yml"
-        service="consents-app"
+    t)  service="consents"
         ;;
     f)  composefile="$OPTARG"
         ;;
 	s)  service="$OPTARG"
-		    ;;
+		;;
     \?) echo "Invalid option -$OPTARG" >&2
         ;;
   esac
@@ -62,7 +60,7 @@ done
 echo "composefile: " $composefile
 echo "service: " $service
 docker-compose -f $composefile exec $service sh -c \
-	"until pg_isready --timeout=60 --username=$POSTGRES_USER --host=consents-database; \
+	'until pg_isready --timeout=60 --username=$POSTGRES_USER --host=$POSTGRES_HOST; \
 	do sleep 1; \
 	done &&\
-	soda migrate up -c ./database.yml -e development -p consents-service/data/migrations"
+	soda migrate up -c ./database.yml -e development -p consents-service/data/migrations'

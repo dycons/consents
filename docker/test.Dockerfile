@@ -7,7 +7,7 @@
 #       docker run -it --rm dyconsent/consents-app
 
 # Modify this line if you want to use a different stack/dependencies-image
-FROM dyconsent/consents-deps AS consents-app
+FROM dyconsent/consents-deps AS consents
 
 ARG API_PATH=/go/src/github.com/dycons/consents/consents-service/api
 ARG SWAGGERFILE=/go/src/github.com/dycons/consents/swagger.yaml
@@ -37,5 +37,5 @@ RUN cd "$API_PATH" && swagger generate server -f "$SWAGGERFILE" -A consents-serv
 RUN go build -o ./app "$API_PATH"/cmd/consents-service-server/main.go
 
 # Run the consents service
-EXPOSE 3001
-ENTRYPOINT ./app --port=3001 --host=0.0.0.0
+EXPOSE 3005
+ENTRYPOINT ./app --port=3005 --host=0.0.0.0
