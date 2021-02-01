@@ -904,7 +904,7 @@
 												"exec": [
 													"// Test that request succeeded",
 													"pm.test(\"Successful POST request\", function () {",
-													"    pm.response.to.have.status(201);",
+													"    pm.response.to.have.status(202);",
 													"});"
 												],
 												"type": "text/javascript"

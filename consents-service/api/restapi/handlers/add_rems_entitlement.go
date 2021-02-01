@@ -64,9 +64,10 @@ func AddRemsEntitlement(params operations.AddRemsEntitlementParams, tx *pop.Conn
 		return operations.NewAddRemsEntitlementInternalServerError().WithPayload(errPayload)
 	}
 	if err != nil {
+		// Log the error, but continue to return the "Accepted" response instead of and Internal Error,
+		// because most likely this error is a unique-index-duplication error, which means that this
+		// data already exists in the database and does not need to be created into it.
 		log.Write(params.HTTPRequest, 500000, err).Debug("Creation of the ProjectConsent into the database failed without validation errors.")
-		errPayload := errors.DefaultInternalServerError()
-		return operations.NewAddRemsEntitlementInternalServerError().WithPayload(errPayload)
 	}
 
 	// Regardless of whether or not creation into the database succeeds, return a 202 Accepted response
