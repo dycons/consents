@@ -113,29 +113,31 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /rems/add_entitlement:
+  /rems/add_entitlements:
     post:
-      operationId: add_rems_entitlement
-      summary: Ingests the REMS webhook that informs of the addition of new entitlement. May initialize a new ProjectConsent.
+      operationId: add_rems_entitlements
+      summary: Ingests the REMS webhook that informs of the addition of new entitlements. May initialize new ProjectConsents. In this draft of the API, successfully posted items are committed in order of their appearance in the payload array. Once an item errors, it and all subsequent items are not committed, and the status for the errored item is returned.
       parameters:
-        - name: rems_entitlement
+        - name: rems_entitlements
           in: body
           schema:
-            $ref: '#/definitions/RemsEntitlement'
-            example:
-              application: 137
-              user: "username"
-              resource: "bf3ba75b-8dfe-4619-b832-31c4a087a589"
-              email: "bob@example.com"
+            type: array
+            items:
+              $ref: '#/definitions/RemsEntitlement'
+              example:
+                application: 137
+                user: "username"
+                resource: "bf3ba75b-8dfe-4619-b832-31c4a087a589"
+                email: "bob@example.com"
       responses:
         202:
-          description: Addition of Entitlement accepted for processing
+          description: Addition of Entitlements accepted for processing
         404:
           description: Resource not found
           schema:
             $ref: "#/definitions/Error"
         500:
-          description: Internal error - Entitlement not accepted for processing.
+          description: Internal error - Entitlements not accepted for processing.
           schema:
             $ref: "#/definitions/Error"
 
